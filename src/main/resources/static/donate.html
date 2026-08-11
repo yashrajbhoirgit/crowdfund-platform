@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donate - Crowdfund Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 2rem;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        h2 {
+            margin-top: 0;
+            font-weight: 700;
+            font-size: 24px;
+            text-align: center;
+        }
+        .campaign-summary {
+            background: rgba(255,255,255,0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .amount-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+        .amount-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .amount-btn:hover, .amount-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+        .input-group {
+            margin-bottom: 1.2rem;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+        input, textarea {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus {
+            border-color: var(--accent);
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        button.submit-btn {
+            width: 100%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button.submit-btn:hover {
+            background: var(--accent-hover);
+        }
+        #success-screen {
+            display: none;
+            text-align: center;
+        }
+        #success-screen h3 {
+            color: #10b981;
+            font-size: 28px;
+        }
+        .receipt-btn {
+            display: inline-block;
+            margin-top: 20px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .receipt-btn:hover {
+            background: var(--accent);
+            color: #fff;
+        }
+    </style>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+<div class="container" id="donation-form-container">
+    <h2>Make a Donation</h2>
+    <div class="campaign-summary" id="campaign-info">
+        Loading campaign info...
+    </div>
+
+    <div class="amount-grid">
+        <button class="amount-btn" data-val="100">₹100</button>
+        <button class="amount-btn" data-val="500">₹500</button>
+        <button class="amount-btn active" data-val="1000">₹1000</button>
+        <button class="amount-btn" data-val="2500">₹2500</button>
+        <button class="amount-btn" data-val="5000">₹5000</button>
+        <button class="amount-btn" id="custom-amount-btn">Custom</button>
+    </div>
+
+    <div class="input-group" id="custom-amount-group" style="display:none;">
+        <label>Custom Amount (₹)</label>
+        <input type="number" id="custom-amount" placeholder="Enter amount">
+    </div>
+
+    <div class="input-group">
+        <label>Message of Support (Optional)</label>
+        <textarea id="message" rows="3" placeholder="Leave a message for the campaign..."></textarea>
+    </div>
+
+    <div class="checkbox-group">
+        <input type="checkbox" id="isAnonymous">
+        <label for="isAnonymous">Make this donation anonymous</label>
+    </div>
+
+    <button class="submit-btn" id="donate-btn">Donate ₹1000</button>
+</div>
+
+<div class="container" id="success-screen">
+    <h3>🎉 Payment Successful!</h3>
+    <p>Thank you for your generous contribution.</p>
+    <a href="#" class="receipt-btn" id="download-receipt">Download Receipt</a>
+    <br><br>
+    <a href="/my-donations.html" style="color: var(--text-muted);">View My Donations</a>
+</div>
+
+<script>
+    let selectedAmount = 1000;
+    const campaignId = new URLSearchParams(window.location.search).get('campaignId') || 1;
+    let donationId = null;
+
+    document.getElementById('campaign-info').innerText = "Supporting Campaign #" + campaignId;
+
+    document.querySelectorAll('.amount-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            
+            if (e.target.id === 'custom-amount-btn') {
+                document.getElementById('custom-amount-group').style.display = 'flex';
+                selectedAmount = document.getElementById('custom-amount').value || 0;
+            } else {
+                document.getElementById('custom-amount-group').style.display = 'none';
+                selectedAmount = e.target.getAttribute('data-val');
+                document.getElementById('donate-btn').innerText = `Donate ₹${selectedAmount}`;
+            }
+        });
+    });
+
+    document.getElementById('custom-amount').addEventListener('input', (e) => {
+        selectedAmount = e.target.value;
+        document.getElementById('donate-btn').innerText = `Donate ₹${selectedAmount}`;
+    });
+
+    document.getElementById('donate-btn').addEventListener('click', async () => {
+        if(selectedAmount < 1) {
+            alert("Please enter a valid amount");
+            return;
+        }
+
+        const payload = {
+            campaignId: campaignId,
+            amount: selectedAmount,
+            message: document.getElementById('message').value,
+            isAnonymous: document.getElementById('isAnonymous').checked
+        };
+
+        try {
+            const initRes = await fetch('/api/donations/initiate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await initRes.json();
+
+            if (!data.orderId) {
+                alert("Failed to initiate payment");
+                return;
+            }
+
+            donationId = data.donationId;
+
+            const options = {
+                "key": data.key, 
+                "amount": data.amount * 100, 
+                "currency": data.currency,
+                "name": "Crowdfund Platform",
+                "description": "Donation for Campaign #" + campaignId,
+                "order_id": data.orderId, 
+                "handler": async function (response) {
+                    verifyPayment(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
+                },
+                "prefill": {
+                    "name": "John Doe", 
+                    "email": "johndoe@example.com"
+                },
+                "theme": {
+                    "color": "#3b82f6"
+                }
+            };
+            const rzp1 = new Razorpay(options);
+            rzp1.open();
+
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Something went wrong");
+        }
+    });
+
+    async function verifyPayment(orderId, paymentId, signature) {
+        try {
+            const res = await fetch('/api/donations/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    razorpayOrderId: orderId,
+                    razorpayPaymentId: paymentId,
+                    razorpaySignature: signature,
+                    donationId: donationId
+                })
+            });
+
+            if(res.ok) {
+                document.getElementById('donation-form-container').style.display = 'none';
+                document.getElementById('success-screen').style.display = 'block';
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+                
+                document.getElementById('download-receipt').href = `/api/donations/${donationId}/receipt`;
+            } else {
+                alert("Payment verification failed");
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+</script>
+</body>
+</html>

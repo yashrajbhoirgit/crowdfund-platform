@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrowdHope | Empower Social Change</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="navbar-brand">
+                💖 <span>CrowdHope</span>
+            </a>
+            <ul class="navbar-nav">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="campaigns.html" class="nav-link">Explore</a></li>
+                <li><a href="about.html" class="nav-link">About Us</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="nav-actions" id="auth-links">
+                <a href="login.html" class="btn btn-outline">Log In</a>
+                <a href="register.html" class="btn btn-gradient">Sign Up</a>
+            </div>
+            <div class="nav-actions" id="user-links" style="display: none;">
+                <span class="nav-link" id="nav-username">User</span>
+                <a href="dashboard.html" class="btn btn-outline">Dashboard</a>
+                <button onclick="logout()" class="btn btn-outline" style="border-color: var(--danger-color); color: var(--danger-color);">Logout</button>
+            </div>
+            <button class="mobile-menu-btn">☰</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-blob blob-1"></div>
+        <div class="hero-blob blob-2"></div>
+        
+        <div class="container">
+            <div class="text-center">
+                <h1 class="heading-xl fade-in-up">Empower Social Change <br>Through <span class="text-gradient">Community Funding</span></h1>
+                <p class="text-muted heading-md fade-in-up delay-1" style="margin: 1.5rem auto; max-width: 800px; font-weight: 400; font-size: 1.25rem;">
+                    Join thousands of people creating real impact. Fund causes you care about or start your own campaign today to make the world a better place.
+                </p>
+                <div class="fade-in-up delay-2 mt-4">
+                    <a href="campaigns.html" class="btn btn-gradient btn-lg" style="margin-right: 1rem;">Explore Campaigns</a>
+                    <a href="create-campaign.html" class="btn btn-outline btn-lg">Start a Campaign</a>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-container fade-in-up delay-3">
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-raised">₹12.5M+</div>
+                        <div class="stat-label">Total Raised</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-campaigns">845</div>
+                        <div class="stat-label">Active Campaigns</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="stat-impact">50K+</div>
+                        <div class="stat-label">Lives Impacted</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Impact Categories -->
+    <section class="section-padding" style="background: rgba(255,255,255,0.02);">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="heading-lg">Causes You Can <span class="text-gradient">Support</span></h2>
+                <p class="text-muted">Discover campaigns across various categories that need your help.</p>
+            </div>
+            
+            <div class="grid grid-cols-3">
+                <div class="glass-card category-card">
+                    <span class="category-icon">📚</span>
+                    <h3 class="mb-1">Education</h3>
+                    <p class="text-muted" style="font-size: 0.9rem;">Help students get access to quality education and resources.</p>
+                </div>
+                <div class="glass-card category-card">
+                    <span class="category-icon">🏥</span>
+                    <h3 class="mb-1">Medical</h3>
+                    <p class="text-muted" style="font-size: 0.9rem;">Support life-saving treatments and medical emergencies.</p>
+                </div>
+                <div class="glass-card category-card">
+                    <span class="category-icon">🌳</span>
+                    <h3 class="mb-1">Environment</h3>
+                    <p class="text-muted" style="font-size: 0.9rem;">Fund projects protecting nature and fighting climate change.</p>
+                </div>
+                <div class="glass-card category-card">
+                    <span class="category-icon">🐾</span>
+                    <h3 class="mb-1">Animal Welfare</h3>
+                    <p class="text-muted" style="font-size: 0.9rem;">Protect and provide shelter for stray and endangered animals.</p>
+                </div>
+                <div class="glass-card category-card">
+                    <span class="category-icon">🍲</span>
+                    <h3 class="mb-1">Hunger Relief</h3>
+                    <p class="text-muted" style="font-size: 0.9rem;">Help provide nutritious meals to communities in need.</p>
+                </div>
+                <div class="glass-card category-card">
+                    <span class="category-icon">🤝</span>
+                    <h3 class="mb-1">Community</h3>
+                    <p class="text-muted" style="font-size: 0.9rem;">Support local development and community empowerment projects.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Campaigns -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="heading-lg">Featured <span class="text-gradient">Campaigns</span></h2>
+                <p class="text-muted">Be the change. Support these urgent causes today.</p>
+            </div>
+
+            <div class="grid grid-cols-3">
+                <!-- Card 1 -->
+                <div class="glass-card campaign-card">
+                    <div class="campaign-img-wrapper">
+                        <span class="campaign-category">Education</span>
+                        <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Education" class="campaign-img">
+                    </div>
+                    <div class="campaign-content">
+                        <h3 class="campaign-title">Build a Rural School Library</h3>
+                        <p class="campaign-desc">Help us build a library for 500+ children in rural Maharashtra to foster a love for reading.</p>
+                        
+                        <div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: 75%"></div>
+                            </div>
+                            <div class="campaign-stats">
+                                <span class="stat-raised">₹1,50,000 raised</span>
+                                <span class="stat-goal">₹2,00,000 goal</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn-outline btn-block mt-3">View Campaign</a>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="glass-card campaign-card">
+                    <div class="campaign-img-wrapper">
+                        <span class="campaign-category">Medical</span>
+                        <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Medical" class="campaign-img">
+                    </div>
+                    <div class="campaign-content">
+                        <h3 class="campaign-title">Emergency Heart Surgery</h3>
+                        <p class="campaign-desc">10-year-old Aryan needs urgent heart surgery. The family cannot afford the medical expenses.</p>
+                        
+                        <div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: 45%"></div>
+                            </div>
+                            <div class="campaign-stats">
+                                <span class="stat-raised">₹2,25,000 raised</span>
+                                <span class="stat-goal">₹5,00,000 goal</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn-outline btn-block mt-3">View Campaign</a>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="glass-card campaign-card">
+                    <div class="campaign-img-wrapper">
+                        <span class="campaign-category">Environment</span>
+                        <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Environment" class="campaign-img">
+                    </div>
+                    <div class="campaign-content">
+                        <h3 class="campaign-title">Plant 10,000 Trees Project</h3>
+                        <p class="campaign-desc">Join our initiative to restore urban green cover by planting 10,000 native trees this monsoon.</p>
+                        
+                        <div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: 90%"></div>
+                            </div>
+                            <div class="campaign-stats">
+                                <span class="stat-raised">₹90,000 raised</span>
+                                <span class="stat-goal">₹1,00,000 goal</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn-outline btn-block mt-3">View Campaign</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-5">
+                <a href="campaigns.html" class="btn btn-primary btn-lg">View All Campaigns</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section-padding" style="background: rgba(108, 99, 255, 0.05);">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="heading-lg">How It <span class="text-gradient">Works</span></h2>
+                <p class="text-muted">Raising funds for a cause is easy, transparent, and secure.</p>
+            </div>
+
+            <div class="grid grid-cols-3">
+                <div class="glass-card step-card pt-5">
+                    <div class="step-number">1</div>
+                    <h3 class="mb-2">Create Your Campaign</h3>
+                    <p class="text-muted">Tell your story, upload a picture, and set your funding goal. It only takes a few minutes.</p>
+                </div>
+                <div class="glass-card step-card pt-5">
+                    <div class="step-number">2</div>
+                    <h3 class="mb-2">Share With Others</h3>
+                    <p class="text-muted">Share your campaign link on social media to reach a wider audience and gather support.</p>
+                </div>
+                <div class="glass-card step-card pt-5">
+                    <div class="step-number">3</div>
+                    <h3 class="mb-2">Receive Funds</h3>
+                    <p class="text-muted">Collect donations securely and withdraw funds directly to your bank account.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="section-padding">
+        <div class="container">
+            <div class="glass-card text-center" style="background: var(--gradient-primary); border: none; padding: 4rem 2rem;">
+                <h2 class="heading-lg mb-3" style="color: white;">Ready to Make an Impact?</h2>
+                <p class="mb-4" style="color: rgba(255,255,255,0.9); font-size: 1.1rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Whether you need help or want to help others, our platform connects you with a community of changemakers.
+                </p>
+                <div>
+                    <a href="create-campaign.html" class="btn" style="background: #fff; color: var(--primary-color); margin-right: 1rem;">Start a Campaign</a>
+                    <a href="register.html" class="btn btn-outline" style="border-color: #fff; color: #fff;">Join the Community</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <a href="index.html" class="navbar-brand mb-3">
+                        💖 <span>CrowdHope</span>
+                    </a>
+                    <p class="text-muted mb-3" style="font-size: 0.9rem;">
+                        A transparent and secure platform empowering individuals to raise funds for social causes and emergencies.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">𝕏</a>
+                        <a href="#" class="social-link">f</a>
+                        <a href="#" class="social-link">in</a>
+                        <a href="#" class="social-link">ig</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Explore</h4>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Medical Causes</a>
+                        <a href="#" class="footer-link">Education</a>
+                        <a href="#" class="footer-link">Environment</a>
+                        <a href="#" class="footer-link">Animal Welfare</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-heading">About</h4>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Our Story</a>
+                        <a href="#" class="footer-link">How it Works</a>
+                        <a href="#" class="footer-link">Trust & Safety</a>
+                        <a href="#" class="footer-link">Careers</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="footer-heading">Support</h4>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Help Center</a>
+                        <a href="#" class="footer-link">Contact Us</a>
+                        <a href="#" class="footer-link">Terms of Service</a>
+                        <a href="#" class="footer-link">Privacy Policy</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2024 CrowdHope. All rights reserved. Made with ❤️ for a better world.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="js/app.js"></script>
+    <script>
+        // Simple counter animation
+        function animateValue(obj, start, end, duration, prefix = '', suffix = '') {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                const currentVal = Math.floor(progress * (end - start) + start);
+                
+                // Format appropriately based on the value
+                if (end > 1000000) {
+                    obj.innerHTML = prefix + (currentVal / 1000000).toFixed(1) + 'M+' + suffix;
+                } else if (end > 1000) {
+                    obj.innerHTML = prefix + Math.floor(currentVal / 1000) + 'K+' + suffix;
+                } else {
+                    obj.innerHTML = prefix + currentVal + suffix;
+                }
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    // Final value exact
+                    if (end === 12500000) obj.innerHTML = '₹12.5M+';
+                    else if (end === 50000) obj.innerHTML = '50K+';
+                    else obj.innerHTML = end;
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const raised = document.getElementById('stat-raised');
+            const campaigns = document.getElementById('stat-campaigns');
+            const impact = document.getElementById('stat-impact');
+            
+            setTimeout(() => {
+                animateValue(raised, 0, 12500000, 2000, '₹');
+                animateValue(campaigns, 0, 845, 2000);
+                animateValue(impact, 0, 50000, 2000);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

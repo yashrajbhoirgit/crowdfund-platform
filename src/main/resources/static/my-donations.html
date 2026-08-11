@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Donations - Crowdfund Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
+        }
+        .header {
+            max-width: 1000px;
+            margin: 0 auto 2rem auto;
+            text-align: center;
+        }
+        .header h1 {
+            font-weight: 700;
+            margin: 0 0 10px 0;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1000px;
+            margin: 0 auto 2rem auto;
+        }
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        .stat-card h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+        .stat-card .val {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-top: 10px;
+        }
+        .donations-list {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .donation-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s;
+        }
+        .donation-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.06);
+        }
+        .donation-info h4 {
+            margin: 0 0 5px 0;
+            font-size: 1.2rem;
+        }
+        .donation-info p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        .donation-actions {
+            text-align: right;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .badge.success { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .badge.pending { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .badge.failed { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        
+        .btn-receipt {
+            background: transparent;
+            border: 1px solid var(--text-muted);
+            color: var(--text-main);
+            padding: 6px 14px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .btn-receipt:hover {
+            background: var(--text-main);
+            color: var(--bg-dark);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 50px;
+            display: none;
+        }
+        .empty-state h1 {
+            font-size: 4rem;
+            margin: 0 0 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>My Impact</h1>
+    <p style="color: var(--text-muted);">Track your generous contributions and receipts.</p>
+</div>
+
+<div class="stats-container">
+    <div class="stat-card">
+        <h3>Total Donated</h3>
+        <div class="val" id="stat-total">₹0</div>
+    </div>
+    <div class="stat-card">
+        <h3>Causes Supported</h3>
+        <div class="val" id="stat-count">0</div>
+    </div>
+    <div class="stat-card">
+        <h3>Impact Score</h3>
+        <div class="val" id="stat-score">0</div>
+    </div>
+</div>
+
+<div class="donations-list" id="donations-list">
+    <!-- Rendered via JS -->
+</div>
+
+<div class="empty-state" id="empty-state">
+    <h1>🌱</h1>
+    <h3>No donations yet</h3>
+    <p style="color: var(--text-muted);">Start making an impact today.</p>
+</div>
+
+<script>
+    async function loadDonations() {
+        try {
+            const res = await fetch('/api/donations/my');
+            const donations = await res.json();
+            
+            if (!donations || donations.length === 0) {
+                document.getElementById('empty-state').style.display = 'block';
+                return;
+            }
+
+            let total = 0;
+            let campaigns = new Set();
+            
+            const listEl = document.getElementById('donations-list');
+            listEl.innerHTML = '';
+
+            donations.forEach(d => {
+                if (d.paymentStatus === 'SUCCESS') {
+                    total += parseFloat(d.amount);
+                    campaigns.add(d.campaignId);
+                }
+
+                const card = document.createElement('div');
+                card.className = 'donation-card';
+                card.innerHTML = `
+                    <div class="donation-info">
+                        <h4>${d.campaignTitle || 'Campaign #'+d.campaignId}</h4>
+                        <p>Date: ${new Date(d.donatedAt).toLocaleDateString()} &bull; Txn: ${d.transactionId}</p>
+                        <p style="margin-top: 5px; font-weight: 600;">₹${d.amount}</p>
+                    </div>
+                    <div class="donation-actions">
+                        <div class="badge ${d.paymentStatus.toLowerCase()}">${d.paymentStatus}</div>
+                        <br>
+                        ${d.paymentStatus === 'SUCCESS' ? \`<a href="/api/donations/${d.id}/receipt" class="btn-receipt" target="_blank">📄 Receipt</a>\` : ''}
+                    </div>
+                `;
+                listEl.appendChild(card);
+            });
+
+            document.getElementById('stat-total').innerText = \`₹${total}\`;
+            document.getElementById('stat-count').innerText = campaigns.size;
+            document.getElementById('stat-score').innerText = Math.floor(total / 100);
+
+        } catch (error) {
+            console.error("Error loading donations:", error);
+        }
+    }
+
+    loadDonations();
+</script>
+</body>
+</html>

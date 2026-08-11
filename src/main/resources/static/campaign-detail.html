@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign Detail</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #10b981;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255,255,255,0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; }
+        .hero { width: 100%; height: 400px; background-size: cover; background-position: center; position: relative; }
+        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-color), transparent); }
+        .container { max-width: 1200px; margin: -100px auto 2rem; padding: 0 2rem; position: relative; z-index: 10; display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
+        
+        .main-col { background: var(--surface-color); padding: 2rem; border-radius: 1rem; border: 1px solid var(--border); }
+        .side-col { display: flex; flex-direction: column; gap: 2rem; }
+        .widget { background: var(--surface-color); padding: 2rem; border-radius: 1rem; border: 1px solid var(--border); }
+        
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.8rem; font-weight: 600; background: rgba(59, 130, 246, 0.2); color: #60a5fa; margin-bottom: 1rem; }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; display: flex; gap: 1rem; }
+        .content { font-size: 1.1rem; color: #cbd5e1; white-space: pre-line; }
+
+        .progress-bar-bg { background: #334155; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 1rem; }
+        .progress-bar-fill { background: var(--accent); height: 100%; width: 0; transition: width 1.5s ease-in-out; }
+        
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-item { text-align: center; }
+        .stat-val { font-size: 1.5rem; font-weight: 700; color: white; }
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); }
+
+        .btn { display: block; width: 100%; padding: 1rem; text-align: center; border-radius: 99px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; font-size: 1.1rem; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        
+        .donation-amounts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .amount-btn { background: #334155; color: white; border: 1px solid var(--border); padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; text-align: center; transition: all 0.2s; }
+        .amount-btn:hover, .amount-btn.active { background: var(--primary); border-color: var(--primary); }
+        .custom-amount { width: 100%; padding: 0.75rem; border-radius: 0.5rem; background: #334155; border: 1px solid var(--border); color: white; margin-bottom: 1.5rem; display: none; }
+    </style>
+</head>
+<body>
+    <div class="hero" id="heroImage" style="background-image: url('https://via.placeholder.com/1200x400/1e293b/ffffff');">
+        <div class="hero-overlay"></div>
+    </div>
+    
+    <div class="container">
+        <div class="main-col">
+            <span class="badge" id="cCategory">Category</span>
+            <h1 id="cTitle">Loading Campaign...</h1>
+            <div class="meta">
+                <span id="cOwner">By: ...</span>
+                <span id="cDate">Created: ...</span>
+            </div>
+            <div class="content" id="cDesc">Loading description...</div>
+        </div>
+        
+        <div class="side-col">
+            <div class="widget">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="cProgress" style="width: 0%"></div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-val" id="cRaised">$0</div>
+                        <div class="stat-label" id="cGoal">Goal: $0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-val" id="cDonors">0</div>
+                        <div class="stat-label">Donors</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-val" id="cDays">0</div>
+                        <div class="stat-label">Days Left</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-val" id="cPercent">0%</div>
+                        <div class="stat-label">Funded</div>
+                    </div>
+                </div>
+
+                <div class="donation-amounts">
+                    <div class="amount-btn" onclick="selectAmount(50)">$50</div>
+                    <div class="amount-btn" onclick="selectAmount(100)">$100</div>
+                    <div class="amount-btn" onclick="selectAmount(500)">$500</div>
+                    <div class="amount-btn" onclick="toggleCustom()">Custom</div>
+                </div>
+                <input type="number" class="custom-amount" id="customInput" placeholder="Enter amount">
+                
+                <button class="btn btn-primary" onclick="donate()">Donate Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const campaignId = urlParams.get('id');
+
+        async function loadCampaign() {
+            if(!campaignId) {
+                document.body.innerHTML = '<h1 style="text-align:center; margin-top:5rem;">Campaign not found.</h1>';
+                return;
+            }
+            try {
+                const res = await fetch('/api/campaigns/' + campaignId);
+                if(!res.ok) throw new Error("Not found");
+                const c = await res.json();
+                
+                if(c.imageUrl) document.getElementById('heroImage').style.backgroundImage = \`url('\${c.imageUrl}')\`;
+                document.getElementById('cCategory').textContent = c.category;
+                document.getElementById('cTitle').textContent = c.title;
+                document.getElementById('cOwner').textContent = 'By: ' + (c.ownerName || 'Anonymous');
+                document.getElementById('cDate').textContent = 'Created: ' + new Date(c.createdAt).toLocaleDateString();
+                document.getElementById('cDesc').textContent = c.description;
+                
+                const pct = c.progressPercentage || 0;
+                setTimeout(() => document.getElementById('cProgress').style.width = pct + '%', 100);
+                
+                document.getElementById('cRaised').textContent = '$' + (c.raisedAmount||0);
+                document.getElementById('cGoal').textContent = 'Goal: $' + c.goalAmount;
+                document.getElementById('cDonors').textContent = c.donorsCount || 0;
+                document.getElementById('cPercent').textContent = pct + '%';
+                
+                const daysLeft = c.deadline ? Math.max(0, Math.ceil((new Date(c.deadline) - new Date()) / (1000 * 60 * 60 * 24))) : 0;
+                document.getElementById('cDays').textContent = daysLeft;
+                
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        let selectedAmount = 0;
+        function selectAmount(amt) {
+            selectedAmount = amt;
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('customInput').style.display = 'none';
+        }
+        function toggleCustom() {
+            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById('customInput').style.display = 'block';
+            selectedAmount = 0;
+        }
+
+        function donate() {
+            let amt = selectedAmount || document.getElementById('customInput').value;
+            if(!amt || amt <= 0) { alert('Please select a valid amount.'); return; }
+            alert('Proceeding to payment gateway for $' + amt);
+            // Integrate with donation module here
+        }
+
+        window.onload = loadCampaign;
+    </script>
+</body>
+</html>

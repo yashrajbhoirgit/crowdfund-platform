@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Campaign</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-main: #f8fafc;
+            --border: rgba(255,255,255,0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 2rem; }
+        
+        .form-card { background: var(--surface-color); padding: 2.5rem; border-radius: 1rem; width: 100%; max-width: 700px; border: 1px solid var(--border); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        h2 { margin-bottom: 2rem; text-align: center; font-size: 2rem; }
+        
+        .step { display: none; }
+        .step.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
+        input, select, textarea { width: 100%; padding: 0.75rem; background: #0f172a; border: 1px solid var(--border); color: white; border-radius: 0.5rem; font-size: 1rem; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+        
+        .btn-group { display: flex; justify-content: space-between; margin-top: 2rem; }
+        button { padding: 0.75rem 2rem; border-radius: 0.5rem; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
+        .btn-prev { background: #334155; color: white; }
+        .btn-next, .btn-submit { background: var(--primary); color: white; }
+        
+        .progress-indicator { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; background: #334155; }
+        .dot.active { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        
+        .file-drop { border: 2px dashed var(--border); padding: 2rem; text-align: center; border-radius: 0.5rem; cursor: pointer; }
+        .file-drop:hover { border-color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="form-card">
+        <h2>Start a Campaign</h2>
+        <div class="progress-indicator" id="dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+
+        <form id="campaignForm">
+            <!-- Step 1 -->
+            <div class="step active" id="step1">
+                <div class="form-group">
+                    <label>Campaign Title</label>
+                    <input type="text" id="title" required placeholder="e.g. Clean Water Initiative">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="category" required>
+                        <option value="Education">Education</option>
+                        <option value="Health">Health</option>
+                        <option value="Environment">Environment</option>
+                        <option value="Disaster Relief">Disaster Relief</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Goal Amount ($)</label>
+                    <input type="number" id="goalAmount" required placeholder="10000">
+                </div>
+                <div class="form-group">
+                    <label>Deadline</label>
+                    <input type="date" id="deadline" required>
+                </div>
+                <div class="btn-group">
+                    <div></div>
+                    <button type="button" class="btn-next" onclick="nextStep(2)">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="step" id="step2">
+                <div class="form-group">
+                    <label>Short Description</label>
+                    <input type="text" id="shortDesc" required placeholder="Brief summary...">
+                </div>
+                <div class="form-group">
+                    <label>Full Story</label>
+                    <textarea id="description" rows="6" required placeholder="Tell your story..."></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn-prev" onclick="nextStep(1)">Back</button>
+                    <button type="button" class="btn-next" onclick="nextStep(3)">Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="step" id="step3">
+                <div class="form-group">
+                    <label>Campaign Image</label>
+                    <div class="file-drop" onclick="document.getElementById('imageFile').click()">
+                        <p>Click or drag image to upload</p>
+                        <input type="file" id="imageFile" style="display:none" accept="image/*">
+                    </div>
+                </div>
+                <div class="btn-group">
+                    <button type="button" class="btn-prev" onclick="nextStep(2)">Back</button>
+                    <button type="button" class="btn-submit" onclick="submitForm()">Create Campaign</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function nextStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            
+            let dots = document.querySelectorAll('.dot');
+            dots.forEach((d, i) => {
+                if(i < step) d.classList.add('active');
+                else d.classList.remove('active');
+            });
+        }
+
+        async function submitForm() {
+            const data = {
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                goalAmount: document.getElementById('goalAmount').value,
+                deadline: document.getElementById('deadline').value,
+                shortDescription: document.getElementById('shortDesc').value,
+                description: document.getElementById('description').value
+            };
+
+            try {
+                // Assuming we have some auth token, maybe stored in localStorage in a real app
+                const res = await fetch('/api/campaigns', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if(!res.ok) throw new Error("Failed to create campaign");
+                const created = await res.json();
+
+                // Upload image if selected
+                const fileInput = document.getElementById('imageFile');
+                if(fileInput.files.length > 0) {
+                    const formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+                    await fetch('/api/campaigns/' + created.id + '/upload-image', {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+
+                alert('Campaign created successfully!');
+                window.location.href = 'campaign-detail.html?id=' + created.id;
+
+            } catch (err) {
+                console.error(err);
+                alert('Error creating campaign.');
+            }
+        }
+    </script>
+</body>
+</html>

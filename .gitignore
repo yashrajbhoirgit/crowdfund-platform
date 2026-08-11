@@ -1,0 +1,48 @@
+# Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Spring Boot
+*.log
+logs/
+
+# IDE - IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# IDE - Eclipse
+.classpath
+.project
+.settings/
+bin/
+
+# IDE - VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Uploads folder (user-uploaded files, don't commit)
+src/main/resources/static/uploads/
+
+# Environment / secrets (do NOT commit real credentials)
+*.env
+.env.local
+
+# Application properties with secrets (keep application.properties in repo but sanitized)
+# application-prod.properties
+# application-secret.properties
