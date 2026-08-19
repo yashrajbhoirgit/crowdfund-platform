@@ -1,4 +1,4 @@
-# 💖 CrowdHope — Crowdfunding Platform for Social Causes
+#  CrowdHope — Crowdfunding Platform for Social Causes
 
 <div align="center">
 
