@@ -3,107 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Users</title>
+    <title>Admin - User Management - CrowdHope</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        
-        :root { --bg: #0f172a; --surface: rgba(30, 41, 59, 0.7); --border: rgba(255, 255, 255, 0.1); --primary: #3b82f6; --text: #f8fafc; --text-muted: #94a3b8; }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; height: 100vh; overflow: hidden; }
+        :root {
+            --bg: #0f172a;
+            --surface: rgba(30, 41, 59, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --primary: #3b82f6;
+            --danger: #ef4444;
+            --success: #10b981;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+        }
 
-        .sidebar { width: 260px; background: var(--surface); border-right: 1px solid var(--border); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-        .sidebar h2 { margin-bottom: 2rem; }
-        .nav-item { padding: 0.75rem 1rem; border-radius: 0.5rem; color: var(--text-muted); text-decoration: none; transition: 0.2s; }
-        .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.05); color: var(--text); border-left: 3px solid var(--primary); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background: var(--bg); color: var(--text); display: flex; flex-direction: column; min-height: 100vh; }
 
-        .main-content { flex: 1; padding: 2rem; overflow-y: auto; }
-        
-        .table-container { background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; padding: 1.5rem; margin-top: 2rem; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border); }
-        th { color: var(--text-muted); font-weight: 500; }
-        
-        .badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.875rem; }
-        .badge.active { background: rgba(16, 185, 129, 0.2); color: #10b981; }
-        .badge.suspended { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .admin-layout { display: flex; flex: 1; }
 
-        .btn { padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; cursor: pointer; color: white; margin-right: 0.5rem; }
-        .btn-suspend { background: #ef4444; }
-        .btn-activate { background: #10b981; }
-        .btn-export { background: var(--primary); margin-bottom: 1rem; }
+        .sidebar {
+            width: 250px;
+            background: var(--surface);
+            backdrop-filter: blur(14px);
+            border-right: 1px solid var(--border);
+            padding: 1.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .sidebar-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            padding: 0.5rem 1rem 1rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1rem;
+            border-radius: 0.6rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border-left: 3px solid var(--primary);
+        }
+
+        .main-content { flex: 1; padding: 2.5rem; overflow-y: auto; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .header h1 { font-size: 2rem; font-weight: 800; }
+
+        .table-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            overflow: hidden;
+            backdrop-filter: blur(12px);
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
+        th, td { padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--border); }
+        th { background: rgba(255, 255, 255, 0.03); color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.05em; }
+        tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; }
+        .badge.active { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+        .badge.admin { background: rgba(139, 92, 246, 0.15); color: #c084fc; }
+
+        .btn { padding: 0.45rem 0.9rem; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.85rem; font-weight: 600; transition: all 0.2s; }
+        .btn-delete { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .btn-delete:hover { background: var(--danger); color: white; }
+        .btn-export { background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.35); color: #60a5fa; }
+        .btn-export:hover { background: var(--primary); color: white; }
     </style>
 </head>
 <body>
+    <script src="js/navbar.js"></script>
 
-    <div class="sidebar">
-        <h2>🚀 Admin</h2>
-        <a href="admin-dashboard.html" class="nav-item">📊 Dashboard</a>
-        <a href="admin-users.html" class="nav-item active">👥 Users</a>
-        <a href="admin-campaigns.html" class="nav-item">🎯 Campaigns</a>
-    </div>
+    <div class="admin-layout">
+        <div class="sidebar">
+            <div class="sidebar-title">Admin Console</div>
+            <a href="admin-dashboard.html" class="nav-item">Dashboard</a>
+            <a href="admin-users.html" class="nav-item active">Users Management</a>
+            <a href="admin-campaigns.html" class="nav-item">Campaigns Moderation</a>
+        </div>
 
-    <div class="main-content">
-        <h1>User Management</h1>
-        <div class="table-container">
-            <button class="btn btn-export" onclick="exportCsv()">Export CSV</button>
-            <table>
-                <thead>
-                    <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr>
-                </thead>
-                <tbody id="userTable">
-                    <!-- Populated by JS -->
-                </tbody>
-            </table>
+        <div class="main-content">
+            <div class="header">
+                <div>
+                    <h1>Registered Users</h1>
+                    <p style="color:var(--text-muted);">Manage platform users and permissions</p>
+                </div>
+                <button class="btn btn-export" onclick="exportCsv()">Export CSV</button>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="userTable">
+                        <tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:3rem;">Loading registered users...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+        if (!token || !user || user.role !== 'ADMIN') {
+            alert('Access restricted. Admin credentials required.');
+            window.location.href = 'login.html';
+        }
+
         async function fetchUsers() {
             try {
-                const res = await fetch('/api/admin/users');
-                const data = await res.json();
-                renderUsers(data);
-            } catch {
-                renderUsers([
-                    {id: 1, name: 'Admin', email: 'admin@test.com', role: 'ADMIN', status: 'ACTIVE'},
-                    {id: 2, name: 'John Doe', email: 'john@test.com', role: 'USER', status: 'SUSPENDED'}
-                ]);
+                const res = await fetch('/api/admin/users', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    renderUsers(data);
+                } else {
+                    document.getElementById('userTable').innerHTML = '<tr><td colspan="6" style="text-align:center; color:#f87171; padding:2rem;">Failed to load users from database.</td></tr>';
+                }
+            } catch (err) {
+                console.error(err);
             }
         }
 
         function renderUsers(users) {
             const tbody = document.getElementById('userTable');
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:3rem;">No registered users found.</td></tr>';
+                return;
+            }
+
             tbody.innerHTML = users.map(u => `
                 <tr>
-                    <td>${u.name}</td>
-                    <td>${u.email}</td>
-                    <td>${u.role}</td>
-                    <td><span class="badge ${u.status.toLowerCase()}">${u.status}</span></td>
+                    <td>#${u.id}</td>
+                    <td><strong>${escapeHtml(u.name || 'User')}</strong></td>
+                    <td>${escapeHtml(u.email || '')}</td>
+                    <td><span class="badge ${u.role === 'ADMIN' ? 'admin' : 'active'}">${u.role}</span></td>
+                    <td><span class="badge active">ACTIVE</span></td>
                     <td>
-                        ${u.status === 'ACTIVE' 
-                            ? `<button class="btn btn-suspend" onclick="toggleStatus(${u.id}, 'suspend')">Suspend</button>`
-                            : `<button class="btn btn-activate" onclick="toggleStatus(${u.id}, 'activate')">Activate</button>`
-                        }
+                        <button class="btn btn-delete" onclick="deleteUser(${u.id}, '${escapeHtml(u.email)}')">Delete</button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        async function toggleStatus(id, action) {
+        async function deleteUser(id, email) {
+            if (!confirm('Are you sure you want to delete user "' + email + '"?\n\nThis will remove their profile and account permanently.')) {
+                return;
+            }
+
             try {
-                await fetch(`/api/admin/users/${id}/${action}`, { method: 'PUT' });
-                alert(`User ${action}d successfully`);
-                fetchUsers();
-            } catch(e) {
-                alert('Action completed (Simulated)');
+                const res = await fetch('/api/admin/users/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.ok) {
+                    alert('User deleted successfully.');
+                    fetchUsers();
+                } else {
+                    alert('Failed to delete user.');
+                }
+            } catch (err) {
+                alert('Error: ' + err.message);
             }
         }
 
-        function exportCsv() {
-            window.open('/api/admin/reports/users/csv', '_blank');
+        async function exportCsv() {
+            try {
+                const res = await fetch('/api/admin/reports/users/csv', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'users_export.csv';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                alert('Export failed: ' + err.message);
+            }
         }
 
-        fetchUsers();
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, function (m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+            });
+        }
+
+        window.onload = fetchUsers;
     </script>
 </body>
 </html>

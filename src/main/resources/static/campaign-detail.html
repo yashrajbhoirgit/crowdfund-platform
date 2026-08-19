@@ -3,162 +3,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Campaign Detail</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Campaign Detail - CrowdHope</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --surface-color: #1e293b;
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface2: #263044;
             --primary: #3b82f6;
             --primary-hover: #2563eb;
             --accent: #10b981;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border: rgba(255,255,255,0.1);
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --border: rgba(255,255,255,0.08);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; }
-        .hero { width: 100%; height: 400px; background-size: cover; background-position: center; position: relative; }
-        .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, var(--bg-color), transparent); }
-        .container { max-width: 1200px; margin: -100px auto 2rem; padding: 0 2rem; position: relative; z-index: 10; display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
-        @media (max-width: 900px) { .container { grid-template-columns: 1fr; } }
-        
-        .main-col { background: var(--surface-color); padding: 2rem; border-radius: 1rem; border: 1px solid var(--border); }
-        .side-col { display: flex; flex-direction: column; gap: 2rem; }
-        .widget { background: var(--surface-color); padding: 2rem; border-radius: 1rem; border: 1px solid var(--border); }
-        
-        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.8rem; font-weight: 600; background: rgba(59, 130, 246, 0.2); color: #60a5fa; margin-bottom: 1rem; }
-        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
-        .meta { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; display: flex; gap: 1rem; }
-        .content { font-size: 1.1rem; color: #cbd5e1; white-space: pre-line; }
+        body { background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
 
-        .progress-bar-bg { background: #334155; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 1rem; }
-        .progress-bar-fill { background: var(--accent); height: 100%; width: 0; transition: width 1.5s ease-in-out; }
-        
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-item { text-align: center; }
-        .stat-val { font-size: 1.5rem; font-weight: 700; color: white; }
-        .stat-label { font-size: 0.85rem; color: var(--text-muted); }
+        .hero {
+            width: 100%; height: 380px;
+            background: linear-gradient(135deg, #1e3a5f, #1a1150);
+            background-size: cover; background-position: center;
+            position: relative; overflow: hidden;
+        }
+        .hero-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, var(--bg) 15%, transparent 85%);
+        }
 
-        .btn { display: block; width: 100%; padding: 1rem; text-align: center; border-radius: 99px; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; font-size: 1.1rem; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-hover); }
-        
-        .donation-amounts { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
-        .amount-btn { background: #334155; color: white; border: 1px solid var(--border); padding: 0.75rem; border-radius: 0.5rem; cursor: pointer; text-align: center; transition: all 0.2s; }
-        .amount-btn:hover, .amount-btn.active { background: var(--primary); border-color: var(--primary); }
-        .custom-amount { width: 100%; padding: 0.75rem; border-radius: 0.5rem; background: #334155; border: 1px solid var(--border); color: white; margin-bottom: 1.5rem; display: none; }
+        .page-wrap {
+            max-width: 1200px; margin: -70px auto 4rem;
+            padding: 0 1.5rem; position: relative; z-index: 10;
+            display: grid; grid-template-columns: 1fr 360px; gap: 2rem;
+        }
+        @media (max-width: 900px) { .page-wrap { grid-template-columns: 1fr; margin-top: -30px; } }
+
+        .main-card { background: var(--surface); border-radius: 1.25rem; border: 1px solid var(--border); padding: 2.25rem; }
+
+        .badge {
+            display: inline-block; padding: 0.25rem 0.85rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700;
+            background: rgba(59,130,246,0.15); color: #60a5fa; margin-bottom: 1rem;
+        }
+        .status-badge { margin-left: 0.5rem; }
+        .status-ACTIVE { background: rgba(16,185,129,0.15); color: #34d399; }
+        .status-PENDING { background: rgba(245,158,11,0.15); color: #fbbf24; }
+        .status-COMPLETED { background: rgba(99,102,241,0.15); color: #818cf8; }
+
+        h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.25; margin-bottom: 1rem; }
+
+        .meta { display: flex; flex-wrap: wrap; gap: 0.8rem 1.75rem; color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; }
+        .meta-item { display: inline-flex; align-items: center; gap: 0.35rem; }
+
+        .section-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 1rem; }
+        .description { color: #cbd5e1; font-size: 1.05rem; line-height: 1.85; white-space: pre-line; }
+
+        .side-col { display: flex; flex-direction: column; gap: 1.5rem; }
+        .widget { background: var(--surface); border-radius: 1.25rem; border: 1px solid var(--border); padding: 1.75rem; }
+
+        .raised-amount { font-size: 2rem; font-weight: 800; color: var(--accent); }
+        .goal-text { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; }
+        .progress-track { height: 10px; background: #334155; border-radius: 5px; overflow: hidden; margin-bottom: 0.75rem; }
+        .progress-fill { height: 100%; background: linear-gradient(to right, #10b981, #059669); border-radius: 5px; width: 0; transition: width 1.2s ease-in-out; }
+        .progress-pct { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.5rem; }
+
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+        .stat-box { background: var(--surface2); border-radius: 0.75rem; padding: 0.9rem; text-align: center; }
+        .stat-val { font-size: 1.35rem; font-weight: 800; }
+        .stat-lbl { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+
+        .donate-label { font-size: 0.85rem; font-weight: 600; color: var(--muted); margin-bottom: 0.75rem; }
+        .amount-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; }
+        .amt-btn {
+            padding: 0.7rem; background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 0.6rem; color: var(--text); cursor: pointer;
+            text-align: center; font-weight: 600; font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .amt-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .amt-btn.selected { background: rgba(59,130,246,0.15); border-color: var(--primary); color: var(--primary); }
+
+        .custom-input {
+            width: 100%; padding: 0.8rem 1rem; margin-bottom: 1rem;
+            background: var(--surface2); border: 1px solid var(--border);
+            border-radius: 0.6rem; color: var(--text); font-size: 0.95rem;
+            outline: none; display: none;
+        }
+        .custom-input:focus { border-color: var(--primary); }
+
+        .btn-donate {
+            width: 100%; padding: 1rem; border-radius: 0.75rem; border: none;
+            background: linear-gradient(to right, #3b82f6, #6366f1);
+            color: white; font-size: 1.05rem; font-weight: 700;
+            cursor: pointer; transition: all 0.25s;
+        }
+        .btn-donate:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(59,130,246,0.4); }
+        .btn-donate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .btn-danger-action {
+            width: 100%; padding: 0.9rem; border-radius: 0.75rem;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            background: rgba(239, 68, 68, 0.12); color: #f87171;
+            font-size: 0.95rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-danger-action:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.8);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.25);
+        }
+
+        .deadline-chip {
+            background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25);
+            border-radius: 0.5rem; padding: 0.65rem 1rem;
+            font-size: 0.85rem; color: #fbbf24;
+        }
+
+        .error-card {
+            background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
+            border-radius: 1rem; padding: 3rem; text-align: center;
+            display: none;
+        }
+        .error-card h2 { color: #f87171; margin-bottom: 0.75rem; }
+        .error-card p { color: var(--muted); margin-bottom: 1.5rem; }
+
+        .skeleton { background: linear-gradient(90deg, #1e293b 25%, #263044 50%, #1e293b 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 0.4rem; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .sk-title { height: 2.2rem; width: 80%; margin-bottom: 1rem; }
+        .sk-line { height: 1rem; margin-bottom: 0.6rem; }
+        .sk-desc { height: 0.9rem; margin-bottom: 0.5rem; }
     </style>
 </head>
 <body>
-    <div class="hero" id="heroImage" style="background-image: url('https://via.placeholder.com/1200x400/1e293b/ffffff');">
+    <script src="js/navbar.js"></script>
+
+    <div class="hero" id="heroImage">
         <div class="hero-overlay"></div>
     </div>
-    
-    <div class="container">
-        <div class="main-col">
-            <span class="badge" id="cCategory">Category</span>
-            <h1 id="cTitle">Loading Campaign...</h1>
-            <div class="meta">
-                <span id="cOwner">By: ...</span>
-                <span id="cDate">Created: ...</span>
+
+    <div class="page-wrap">
+        <div>
+            <div class="error-card" id="errorCard">
+                <h2>Campaign Not Found</h2>
+                <p id="errorMsg">This campaign could not be loaded.</p>
+                <a href="campaigns.html" class="btn-donate" style="display:inline-block; width:auto; text-decoration:none; padding:0.75rem 2rem;">Back to Campaigns</a>
             </div>
-            <div class="content" id="cDesc">Loading description...</div>
-        </div>
-        
-        <div class="side-col">
-            <div class="widget">
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="cProgress" style="width: 0%"></div>
+
+            <div class="main-card" id="mainCard">
+                <div id="skeleton">
+                    <div class="skeleton sk-title"></div>
+                    <div class="skeleton sk-line" style="width: 60%;"></div>
+                    <div class="skeleton sk-line" style="width: 40%; margin-bottom: 2rem;"></div>
+                    <div class="skeleton sk-desc"></div>
+                    <div class="skeleton sk-desc"></div>
+                    <div class="skeleton sk-desc" style="width: 70%;"></div>
                 </div>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <div class="stat-val" id="cRaised">$0</div>
-                        <div class="stat-label" id="cGoal">Goal: $0</div>
+
+                <div id="realContent" style="display:none;">
+                    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.5rem; margin-bottom:1rem;">
+                        <span class="badge" id="cCategory">Category</span>
+                        <span class="badge status-badge" id="cStatus">ACTIVE</span>
                     </div>
-                    <div class="stat-item">
+                    <h1 id="cTitle">Loading...</h1>
+                    <div class="meta">
+                        <span class="meta-item">Creator: <strong id="cOwner" style="color:white; margin-left:4px;">...</strong></span>
+                        <span class="meta-item">Created: <strong id="cDate" style="color:white; margin-left:4px;">...</strong></span>
+                    </div>
+                    <div class="section-title">About this Campaign</div>
+                    <div class="description" id="cDesc"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="side-col">
+            <!-- Progress Widget -->
+            <div class="widget" id="progressWidget">
+                <div class="raised-amount" id="cRaised">INR 0</div>
+                <div class="goal-text">raised of <strong id="cGoal">INR 0</strong> goal</div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="cProgress"></div>
+                </div>
+                <div class="progress-pct"><strong id="cPercent">0%</strong> funded</div>
+
+                <div class="stats-row">
+                    <div class="stat-box">
                         <div class="stat-val" id="cDonors">0</div>
-                        <div class="stat-label">Donors</div>
+                        <div class="stat-lbl">Donors</div>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-box">
                         <div class="stat-val" id="cDays">0</div>
-                        <div class="stat-label">Days Left</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-val" id="cPercent">0%</div>
-                        <div class="stat-label">Funded</div>
+                        <div class="stat-lbl">Days Left</div>
                     </div>
                 </div>
 
-                <div class="donation-amounts">
-                    <div class="amount-btn" onclick="selectAmount(50)">$50</div>
-                    <div class="amount-btn" onclick="selectAmount(100)">$100</div>
-                    <div class="amount-btn" onclick="selectAmount(500)">$500</div>
-                    <div class="amount-btn" onclick="toggleCustom()">Custom</div>
+                <div class="deadline-chip" id="deadlineChip" style="display:none;">
+                    <span id="deadlineText"></span>
                 </div>
-                <input type="number" class="custom-amount" id="customInput" placeholder="Enter amount">
-                
-                <button class="btn btn-primary" onclick="donate()">Donate Now</button>
+            </div>
+
+            <!-- Donate Widget -->
+            <div class="widget" id="donateWidget">
+                <div class="donate-label">Choose Donation Amount (INR)</div>
+                <div class="amount-grid">
+                    <div class="amt-btn" onclick="selectAmount(100, this)">INR 100</div>
+                    <div class="amt-btn" onclick="selectAmount(500, this)">INR 500</div>
+                    <div class="amt-btn" onclick="selectAmount(1000, this)">INR 1,000</div>
+                    <div class="amt-btn" onclick="selectAmount(5000, this)">INR 5,000</div>
+                </div>
+                <div class="amt-btn" style="margin-bottom:0.75rem; text-align:center;" onclick="toggleCustom(this)">Enter custom amount</div>
+                <input type="number" class="custom-input" id="customInput" placeholder="Enter amount in INR" min="10">
+
+                <button class="btn-donate" onclick="donate()" id="donateBtn">Donate Now</button>
+            </div>
+
+            <!-- Manage / Delete Widget (Active for logged-in users / owner / admin) -->
+            <div class="widget" id="deleteWidget" style="border-color: rgba(239, 68, 68, 0.3);">
+                <div class="section-title" style="color: #f87171;">Manage Campaign</div>
+                <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem;">Delete this campaign from the platform.</p>
+                <button class="btn-danger-action" onclick="deleteCurrentCampaign()" id="deleteBtn">
+                    Delete Campaign
+                </button>
+            </div>
+
+            <!-- Share Widget -->
+            <div class="widget">
+                <div class="section-title">Share</div>
+                <div style="display:flex; gap:0.5rem;">
+                    <button onclick="copyPageLink()" style="flex:1; padding:0.65rem; background:var(--surface2); border:1px solid var(--border); border-radius:0.6rem; color:var(--text); cursor:pointer; font-size:0.85rem;">Copy Link</button>
+                    <button onclick="shareOnWhatsApp()" style="flex:1; padding:0.65rem; background:rgba(37,211,102,0.1); border:1px solid rgba(37,211,102,0.3); border-radius:0.6rem; color:#22c55e; cursor:pointer; font-size:0.85rem;">WhatsApp</button>
+                </div>
+                <div id="copyNotice" style="display:none; text-align:center; margin-top:0.6rem; font-size:0.8rem; color:var(--accent);">Link copied to clipboard!</div>
             </div>
         </div>
     </div>
 
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const campaignId = urlParams.get('id');
+        const params = new URLSearchParams(window.location.search);
+        const campaignId = params.get('id');
+        let campaignData = null;
+        let selectedAmt = 0;
+
+        function formatINR(amount) {
+            if (!amount && amount !== 0) return 'INR 0';
+            return 'INR ' + Number(amount).toLocaleString('en-IN');
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'Unknown';
+            try {
+                return new Date(dateStr).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch {
+                return dateStr;
+            }
+        }
 
         async function loadCampaign() {
-            if(!campaignId) {
-                document.body.innerHTML = '<h1 style="text-align:center; margin-top:5rem;">Campaign not found.</h1>';
+            if (!campaignId) {
+                showError('No campaign ID was specified in the URL.');
                 return;
             }
+
             try {
-                const res = await fetch('/api/campaigns/' + campaignId);
-                if(!res.ok) throw new Error("Not found");
+                const token = localStorage.getItem('token');
+                const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+                const res = await fetch('/api/campaigns/' + campaignId, { headers });
+
+                if (!res.ok) {
+                    throw new Error('Campaign not found or server error (Status ' + res.status + ')');
+                }
+
                 const c = await res.json();
-                
-                if(c.imageUrl) document.getElementById('heroImage').style.backgroundImage = \`url('\${c.imageUrl}')\`;
-                document.getElementById('cCategory').textContent = c.category;
-                document.getElementById('cTitle').textContent = c.title;
-                document.getElementById('cOwner').textContent = 'By: ' + (c.ownerName || 'Anonymous');
-                document.getElementById('cDate').textContent = 'Created: ' + new Date(c.createdAt).toLocaleDateString();
-                document.getElementById('cDesc').textContent = c.description;
-                
-                const pct = c.progressPercentage || 0;
-                setTimeout(() => document.getElementById('cProgress').style.width = pct + '%', 100);
-                
-                document.getElementById('cRaised').textContent = '$' + (c.raisedAmount||0);
-                document.getElementById('cGoal').textContent = 'Goal: $' + c.goalAmount;
-                document.getElementById('cDonors').textContent = c.donorsCount || 0;
-                document.getElementById('cPercent').textContent = pct + '%';
-                
-                const daysLeft = c.deadline ? Math.max(0, Math.ceil((new Date(c.deadline) - new Date()) / (1000 * 60 * 60 * 24))) : 0;
-                document.getElementById('cDays').textContent = daysLeft;
-                
-            } catch(e) {
-                console.error(e);
+                campaignData = c;
+                renderCampaign(c);
+
+            } catch (err) {
+                console.error(err);
+                showError(err.message || 'Unable to load campaign.');
             }
         }
 
-        let selectedAmount = 0;
-        function selectAmount(amt) {
-            selectedAmount = amt;
-            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
+        function renderCampaign(c) {
+            if (c.imageUrl) {
+                document.getElementById('heroImage').style.backgroundImage = "url('" + c.imageUrl + "')";
+            }
+
+            document.title = (c.title || 'Campaign') + ' - CrowdHope';
+            document.getElementById('cCategory').textContent = c.category || 'Cause';
+            document.getElementById('cStatus').textContent = c.status || 'ACTIVE';
+            document.getElementById('cTitle').textContent = c.title || 'Untitled Campaign';
+            document.getElementById('cOwner').textContent = c.ownerName || 'Creator';
+            document.getElementById('cDate').textContent = formatDate(c.createdAt);
+            document.getElementById('cDesc').textContent = c.description || c.shortDescription || 'No detailed story provided.';
+
+            const raised = c.raisedAmount || 0;
+            const goal = c.goalAmount || 0;
+            const pct = c.progressPercentage || 0;
+
+            document.getElementById('cRaised').textContent = formatINR(raised);
+            document.getElementById('cGoal').textContent = formatINR(goal);
+            document.getElementById('cDonors').textContent = c.donorsCount || 0;
+            document.getElementById('cPercent').textContent = pct + '%';
+
+            setTimeout(() => {
+                document.getElementById('cProgress').style.width = Math.min(pct, 100) + '%';
+            }, 150);
+
+            if (c.deadline) {
+                const deadlineDate = new Date(c.deadline + 'T00:00:00');
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                const daysLeft = Math.ceil((deadlineDate - today) / (1000 * 60 * 60 * 24));
+
+                if (daysLeft > 0) {
+                    document.getElementById('cDays').textContent = daysLeft;
+                    const chip = document.getElementById('deadlineChip');
+                    chip.style.display = 'block';
+                    document.getElementById('deadlineText').textContent = 'Deadline: ' + formatDate(c.deadline) + ' (' + daysLeft + ' days left)';
+                } else {
+                    document.getElementById('cDays').textContent = '0';
+                    const chip = document.getElementById('deadlineChip');
+                    chip.style.display = 'block';
+                    document.getElementById('deadlineText').textContent = 'Campaign ended on ' + formatDate(c.deadline);
+                    document.getElementById('donateBtn').disabled = true;
+                    document.getElementById('donateBtn').textContent = 'Campaign Ended';
+                }
+            }
+
+            document.getElementById('skeleton').style.display = 'none';
+            document.getElementById('realContent').style.display = 'block';
+        }
+
+        function showError(msg) {
+            document.getElementById('mainCard').style.display = 'none';
+            document.getElementById('progressWidget').style.display = 'none';
+            document.getElementById('donateWidget').style.display = 'none';
+            document.getElementById('deleteWidget').style.display = 'none';
+            const errCard = document.getElementById('errorCard');
+            errCard.style.display = 'block';
+            document.getElementById('errorMsg').textContent = msg;
+        }
+
+        function selectAmount(amt, el) {
+            selectedAmt = amt;
+            document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('selected'));
+            if (el) el.classList.add('selected');
             document.getElementById('customInput').style.display = 'none';
         }
-        function toggleCustom() {
-            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById('customInput').style.display = 'block';
-            selectedAmount = 0;
+
+        function toggleCustom(el) {
+            document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('selected'));
+            if (el) el.classList.add('selected');
+            selectedAmt = 0;
+            const inp = document.getElementById('customInput');
+            const showing = inp.style.display === 'block';
+            inp.style.display = showing ? 'none' : 'block';
+            if (!showing) inp.focus();
         }
 
         function donate() {
-            let amt = selectedAmount || document.getElementById('customInput').value;
-            if(!amt || amt <= 0) { alert('Please select a valid amount.'); return; }
-            alert('Proceeding to payment gateway for $' + amt);
-            // Integrate with donation module here
+            const token = localStorage.getItem('token');
+            if (!token) {
+                if (confirm('Please sign in to donate. Go to login page?')) {
+                    window.location.href = 'login.html';
+                }
+                return;
+            }
+
+            const customVal = parseFloat(document.getElementById('customInput').value);
+            const amount = selectedAmt || (customVal > 0 ? customVal : 0);
+
+            if (!amount || amount < 10) {
+                alert('Please select or enter an amount of at least INR 10.');
+                return;
+            }
+
+            window.location.href = 'donate.html?id=' + campaignId + '&amount=' + amount;
+        }
+
+        async function deleteCurrentCampaign() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please sign in to delete this campaign.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const name = (campaignData && campaignData.title) ? campaignData.title : 'this campaign';
+            if (!confirm('Are you sure you want to delete "' + name + '"?\n\nThis action is permanent.')) {
+                return;
+            }
+
+            const btn = document.getElementById('deleteBtn');
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
+
+            try {
+                const res = await fetch('/api/campaigns/' + campaignId, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.ok || res.status === 204) {
+                    alert('Campaign deleted successfully.');
+                    window.location.href = 'campaigns.html';
+                } else if (res.status === 403) {
+                    alert('Permission denied. You can only delete your own campaigns or delete as an Admin.');
+                    btn.disabled = false;
+                    btn.textContent = 'Delete Campaign';
+                } else {
+                    throw new Error('Server returned ' + res.status);
+                }
+            } catch (err) {
+                alert('Failed to delete campaign: ' + err.message);
+                btn.disabled = false;
+                btn.textContent = 'Delete Campaign';
+            }
+        }
+
+        function copyPageLink() {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                const note = document.getElementById('copyNotice');
+                note.style.display = 'block';
+                setTimeout(() => note.style.display = 'none', 2500);
+            });
+        }
+
+        function shareOnWhatsApp() {
+            const text = encodeURIComponent((campaignData?.title || 'Support this campaign') + ' - ' + window.location.href);
+            window.open('https://wa.me/?text=' + text, '_blank');
         }
 
         window.onload = loadCampaign;

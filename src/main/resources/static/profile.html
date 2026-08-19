@@ -3,17 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Profile - Crowdfund</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>User Profile - CrowdHope</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --secondary: #a855f7;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #10b981;
+            --danger: #ef4444;
             --bg-dark: #0f172a;
             --card-bg: #1e293b;
             --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
             --glass-bg: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
         }
         
         * {
@@ -24,242 +29,324 @@
         }
 
         body {
-            background: var(--bg-dark);
+            background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at top right, #1e3a5f 0%, transparent 40%),
+                              radial-gradient(circle at bottom left, #1a1150 0%, transparent 40%);
             color: var(--text-light);
             min-height: 100vh;
         }
 
-        .navbar {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 1rem 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #818cf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .logout-btn {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: #ef4444;
-            color: white;
-        }
-
         .container {
             max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 5%;
+            margin: 2.5rem auto;
+            padding: 0 1.5rem 4rem;
             display: grid;
-            grid-template-columns: 1fr 2fr;
+            grid-template-columns: 320px 1fr;
             gap: 2rem;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 860px) {
             .container { grid-template-columns: 1fr; }
         }
 
         .glass-card {
             background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 1.5rem;
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
             padding: 2rem;
         }
 
         .profile-sidebar {
             text-align: center;
+            align-self: flex-start;
         }
 
         .avatar {
-            width: 120px;
-            height: 120px;
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            margin: 0 auto 1.25rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
-            font-weight: 600;
+            font-size: 2.5rem;
+            font-weight: 700;
             color: white;
-            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
         }
 
         .profile-name {
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 700;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.35rem;
         }
 
         .profile-role {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background: rgba(99, 102, 241, 0.2);
-            color: #818cf8;
-            border-radius: 1rem;
+            padding: 0.25rem 0.85rem;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border-radius: 99px;
             font-size: 0.8rem;
-            margin-bottom: 1rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            text-transform: uppercase;
         }
 
-        .profile-info p {
-            color: #94a3b8;
-            margin-bottom: 0.5rem;
+        .profile-info {
+            text-align: left;
+            border-top: 1px solid var(--border);
+            padding-top: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .info-row {
             font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+        .info-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 2px;
         }
 
         .edit-btn {
             margin-top: 1.5rem;
             width: 100%;
             padding: 0.75rem;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--glass-border);
-            border-radius: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 0.6rem;
             color: white;
             cursor: pointer;
-            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
         }
-        
-        .edit-btn:hover { background: rgba(255,255,255,0.1); }
+        .edit-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
 
         .tabs {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            border-bottom: 1px solid var(--glass-border);
+            gap: 0.6rem;
+            margin-bottom: 1.75rem;
+            border-bottom: 1px solid var(--border);
             padding-bottom: 1rem;
+            flex-wrap: wrap;
         }
 
         .tab {
-            padding: 0.5rem 1rem;
+            padding: 0.55rem 1.25rem;
             cursor: pointer;
-            color: #94a3b8;
-            border-radius: 0.5rem;
-            transition: all 0.3s;
+            color: var(--text-muted);
+            border-radius: 0.6rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: transparent;
         }
-
+        .tab:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.04);
+        }
         .tab.active {
-            background: rgba(99, 102, 241, 0.2);
-            color: #818cf8;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
-        .dashboard-content {
-            display: none;
-        }
+        .dashboard-content { display: none; }
+        .dashboard-content.active { display: block; }
 
-        .dashboard-content.active {
-            display: block;
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
+        .section-header h3 { font-size: 1.3rem; font-weight: 700; }
 
-        .list-item {
+        .btn-create {
+            padding: 0.5rem 1.1rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-create:hover { background: var(--primary-hover); }
+
+        .campaign-item {
             background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--glass-border);
-            padding: 1.5rem;
-            border-radius: 1rem;
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            border-radius: 0.85rem;
             margin-bottom: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            transition: background 0.2s;
         }
+        .campaign-item:hover { background: rgba(15, 23, 42, 0.85); }
+        .campaign-title { font-size: 1.1rem; font-weight: 700; color: white; text-decoration: none; margin-bottom: 0.35rem; display: block; }
+        .campaign-title:hover { color: var(--primary); }
+        .campaign-meta { font-size: 0.85rem; color: var(--text-muted); }
+
+        .btn-action-view {
+            padding: 0.45rem 1rem;
+            background: rgba(59, 130, 246, 0.12);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .btn-action-view:hover { background: var(--primary); color: white; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
 
         .form-group { margin-bottom: 1rem; }
-        .form-group label { display: block; margin-bottom: 0.5rem; color: #94a3b8; font-size: 0.9rem; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label { display: block; margin-bottom: 0.4rem; color: #cbd5e1; font-size: 0.85rem; font-weight: 600; }
         .form-group input, .form-group textarea {
             width: 100%;
-            padding: 0.75rem;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid var(--glass-border);
-            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border);
+            border-radius: 0.6rem;
             color: white;
             outline: none;
+            font-size: 0.95rem;
+            font-family: inherit;
         }
-        
+        .form-group input:focus, .form-group textarea:focus { border-color: var(--primary); }
+
         .save-btn {
-            padding: 0.75rem 1.5rem;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+            padding: 0.8rem 1.75rem;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 0.6rem;
             color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
             cursor: pointer;
-            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+        .save-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+
+        .empty-placeholder {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">Crowdfund</div>
-        <button class="logout-btn" onclick="logout()">Logout</button>
-    </nav>
+    <script src="js/navbar.js"></script>
 
     <div class="container">
+        <!-- Sidebar Profile Card -->
         <aside class="glass-card profile-sidebar">
             <div class="avatar" id="avatarInitials">U</div>
             <h2 class="profile-name" id="display-name">Loading...</h2>
-            <div class="profile-role" id="display-role">ROLE</div>
+            <div class="profile-role" id="display-role">USER</div>
+
             <div class="profile-info">
-                <p id="display-email"></p>
-                <p id="display-location">📍 Add Location</p>
-                <p id="display-bio">No bio added yet.</p>
+                <div class="info-row">
+                    <div class="info-label">Email Address</div>
+                    <div id="display-email">...</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Location</div>
+                    <div id="display-location">Not specified</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">About / Bio</div>
+                    <div id="display-bio">No bio added yet.</div>
+                </div>
             </div>
+
             <button class="edit-btn" onclick="toggleEdit()">Edit Profile</button>
         </aside>
 
+        <!-- Main Content with Tabs -->
         <main class="glass-card">
             <div class="tabs">
-                <div class="tab active" onclick="switchTab('campaigns')">My Campaigns</div>
-                <div class="tab" onclick="switchTab('donations')">My Donations</div>
-                <div class="tab" id="settings-tab" style="display:none" onclick="switchTab('settings')">Settings</div>
+                <button type="button" class="tab active" onclick="switchTab('campaigns-tab', this)">My Campaigns</button>
+                <button type="button" class="tab" onclick="switchTab('donations-tab', this)">My Donations</button>
+                <button type="button" class="tab" id="settings-tab-btn" onclick="switchTab('settings-tab', this)">Edit Profile</button>
             </div>
 
-            <div id="campaigns" class="dashboard-content active">
-                <h3>Your Active Campaigns</h3>
-                <p style="color: #94a3b8; margin-top: 1rem;">No campaigns found.</p>
-                <!-- Campaign list would be populated here via JS -->
+            <!-- Tab 1: My Campaigns -->
+            <div id="campaigns-tab" class="dashboard-content active">
+                <div class="section-header">
+                    <h3>My Fundraising Campaigns</h3>
+                    <a href="create-campaign.html" class="btn-create">+ Start New Campaign</a>
+                </div>
+                <div id="userCampaignsList">
+                    <div class="empty-placeholder">Loading your campaigns...</div>
+                </div>
             </div>
 
-            <div id="donations" class="dashboard-content">
-                <h3>Recent Donations</h3>
-                <p style="color: #94a3b8; margin-top: 1rem;">No donations found.</p>
+            <!-- Tab 2: My Donations -->
+            <div id="donations-tab" class="dashboard-content">
+                <div class="section-header">
+                    <h3>Recent Contributions</h3>
+                    <a href="my-donations.html" class="btn-create">View All Donations</a>
+                </div>
+                <div id="userDonationsList">
+                    <div class="empty-placeholder">Loading your donations...</div>
+                </div>
             </div>
 
-            <div id="settings" class="dashboard-content">
-                <h3>Edit Profile</h3>
-                <form id="profileForm" style="margin-top: 1.5rem;">
-                    <div class="form-group">
-                        <label>Full Name</label>
-                        <input type="text" id="edit-name">
-                    </div>
-                    <div class="form-group">
-                        <label>Bio</label>
-                        <textarea id="edit-bio" rows="4"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Location</label>
-                        <input type="text" id="edit-location">
-                    </div>
-                    <div class="form-group">
-                        <label>Phone</label>
-                        <input type="text" id="edit-phone">
-                    </div>
-                    <div class="form-group">
-                        <label>Website</label>
-                        <input type="text" id="edit-website">
+            <!-- Tab 3: Edit Profile -->
+            <div id="settings-tab" class="dashboard-content">
+                <div class="section-header">
+                    <h3>Update Profile Information</h3>
+                </div>
+                <form id="profileForm" onsubmit="handleProfileUpdate(event)">
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label for="edit-name">Full Name</label>
+                            <input type="text" id="edit-name" required>
+                        </div>
+                        <div class="form-group full">
+                            <label for="edit-bio">Short Bio</label>
+                            <textarea id="edit-bio" rows="3" placeholder="Tell the community about yourself..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-location">Location / City</label>
+                            <input type="text" id="edit-location" placeholder="e.g. Mumbai, India">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-phone">Phone Number</label>
+                            <input type="text" id="edit-phone" placeholder="e.g. +91 9876543210">
+                        </div>
+                        <div class="form-group full">
+                            <label for="edit-website">Website / Social Link</label>
+                            <input type="text" id="edit-website" placeholder="https://">
+                        </div>
                     </div>
                     <button type="submit" class="save-btn">Save Changes</button>
                 </form>
@@ -269,84 +356,182 @@
 
     <script>
         const token = localStorage.getItem('token');
-        if (!token) window.location.href = 'login.html';
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        function formatINR(val) {
+            if (!val && val !== 0) return 'INR 0';
+            return 'INR ' + Number(val).toLocaleString('en-IN');
+        }
 
         async function fetchProfile() {
             try {
                 const res = await fetch('/api/auth/profile', {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                    headers: { 'Authorization': 'Bearer ' + token }
                 });
                 
                 if (res.ok) {
                     const user = await res.json();
                     
-                    document.getElementById('display-name').textContent = user.name;
-                    document.getElementById('display-email').textContent = user.email;
-                    document.getElementById('display-role').textContent = user.role.replace('_', ' ');
-                    document.getElementById('display-location').textContent = user.location ? `📍 ${user.location}` : '📍 Add Location';
+                    document.getElementById('display-name').textContent = user.name || 'User';
+                    document.getElementById('display-email').textContent = user.email || '';
+                    document.getElementById('display-role').textContent = user.role || 'USER';
+                    document.getElementById('display-location').textContent = user.location || 'Not specified';
                     document.getElementById('display-bio').textContent = user.bio || 'No bio added yet.';
                     
-                    document.getElementById('avatarInitials').textContent = user.name.charAt(0).toUpperCase();
+                    const initial = (user.name || user.email || 'U')[0].toUpperCase();
+                    document.getElementById('avatarInitials').textContent = initial;
 
                     document.getElementById('edit-name').value = user.name || '';
                     document.getElementById('edit-bio').value = user.bio || '';
                     document.getElementById('edit-location').value = user.location || '';
                     document.getElementById('edit-phone').value = user.phone || '';
                     document.getElementById('edit-website').value = user.website || '';
+
+                    // Load user's campaigns & donations
+                    loadUserCampaigns();
+                    loadUserDonations();
+
                 } else {
-                    logout();
+                    localStorage.removeItem('token');
+                    window.location.href = 'login.html';
                 }
             } catch (err) {
                 console.error('Error fetching profile', err);
             }
         }
 
-        function switchTab(tabId) {
+        async function loadUserCampaigns() {
+            const listEl = document.getElementById('userCampaignsList');
+            try {
+                const res = await fetch('/api/campaigns/my', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (!res.ok) throw new Error('Failed to load campaigns');
+
+                const campaigns = await res.json();
+
+                if (!campaigns || campaigns.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="empty-placeholder">
+                            <p style="margin-bottom:1rem;">You haven't launched any campaigns yet.</p>
+                            <a href="create-campaign.html" class="btn-create">Start Your First Campaign</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                listEl.innerHTML = campaigns.map(c => `
+                    <div class="campaign-item">
+                        <div>
+                            <a href="campaign-detail.html?id=${c.id}" class="campaign-title">${escapeHtml(c.title || 'Untitled')}</a>
+                            <div class="campaign-meta">
+                                Category: ${escapeHtml(c.category || 'Cause')} &bull; Raised: <strong style="color:var(--accent);">${formatINR(c.raisedAmount)}</strong> of ${formatINR(c.goalAmount)}
+                            </div>
+                        </div>
+                        <a href="campaign-detail.html?id=${c.id}" class="btn-action-view">View &amp; Manage</a>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                listEl.innerHTML = '<div class="empty-placeholder" style="color:#f87171;">Unable to load your campaigns.</div>';
+            }
+        }
+
+        async function loadUserDonations() {
+            const listEl = document.getElementById('userDonationsList');
+            try {
+                const res = await fetch('/api/donations/my', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (!res.ok) throw new Error('Failed to load donations');
+
+                const donations = await res.json();
+
+                if (!donations || donations.length === 0) {
+                    listEl.innerHTML = `
+                        <div class="empty-placeholder">
+                            <p style="margin-bottom:1rem;">No donations recorded yet.</p>
+                            <a href="campaigns.html" class="btn-create">Explore Causes</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                listEl.innerHTML = donations.slice(0, 5).map(d => {
+                    const dateFormatted = d.donatedAt ? new Date(d.donatedAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Recent';
+                    return `
+                        <div class="campaign-item">
+                            <div>
+                                <div style="font-weight:700; color:white; font-size:1.05rem; margin-bottom:0.25rem;">${escapeHtml(d.campaignTitle || 'Campaign #' + d.campaignId)}</div>
+                                <div class="campaign-meta">Date: ${dateFormatted} &bull; Txn: ${escapeHtml(d.transactionId || '')}</div>
+                            </div>
+                            <div style="font-size:1.15rem; font-weight:800; color:var(--accent);">${formatINR(d.amount)}</div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                listEl.innerHTML = '<div class="empty-placeholder" style="color:#f87171;">Unable to load donations.</div>';
+            }
+        }
+
+        function switchTab(tabId, el) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.dashboard-content').forEach(c => c.classList.remove('active'));
             
-            event.target.classList.add('active');
+            if (el) el.classList.add('active');
             document.getElementById(tabId).classList.add('active');
         }
 
         function toggleEdit() {
-            document.getElementById('settings-tab').style.display = 'block';
-            document.getElementById('settings-tab').click();
+            const btn = document.getElementById('settings-tab-btn');
+            btn.click();
         }
 
-        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+        async function handleProfileUpdate(e) {
             e.preventDefault();
             const data = {
-                name: document.getElementById('edit-name').value,
-                bio: document.getElementById('edit-bio').value,
-                location: document.getElementById('edit-location').value,
-                phone: document.getElementById('edit-phone').value,
-                website: document.getElementById('edit-website').value
+                name: document.getElementById('edit-name').value.trim(),
+                bio: document.getElementById('edit-bio').value.trim(),
+                location: document.getElementById('edit-location').value.trim(),
+                phone: document.getElementById('edit-phone').value.trim(),
+                website: document.getElementById('edit-website').value.trim()
             };
 
-            const res = await fetch('/api/auth/profile', {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
+            try {
+                const res = await fetch('/api/auth/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': 'Bearer ' + token,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
 
-            if (res.ok) {
-                alert('Profile updated successfully!');
-                fetchProfile();
-                document.querySelector('.tab').click(); // go back to first tab
+                if (res.ok) {
+                    alert('Profile updated successfully!');
+                    fetchProfile();
+                    document.querySelector('.tab').click();
+                } else {
+                    alert('Failed to update profile.');
+                }
+            } catch (err) {
+                alert('Error updating profile: ' + err.message);
             }
-        });
-
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = 'login.html';
         }
 
-        fetchProfile();
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, function (m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+            });
+        }
+
+        window.onload = fetchProfile;
     </script>
 </body>
 </html>

@@ -12,7 +12,7 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/admin")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN') or hasAuthority('ROLE_ADMIN') or hasAuthority('ADMIN')")
 public class AdminController {
 
     @Autowired
@@ -25,17 +25,12 @@ public class AdminController {
 
     @GetMapping("/users")
     public ResponseEntity<List<Map<String, Object>>> getUsers() {
-        // Mock data
-        List<Map<String, Object>> users = new ArrayList<>();
-        users.add(Map.of("id", 1, "name", "Admin User", "email", "admin@test.com", "role", "ADMIN", "status", "ACTIVE", "joinDate", "2023-01-01"));
-        users.add(Map.of("id", 2, "name", "John Doe", "email", "john@test.com", "role", "USER", "status", "ACTIVE", "joinDate", "2023-02-15"));
-        users.add(Map.of("id", 3, "name", "Jane Smith", "email", "jane@test.com", "role", "USER", "status", "SUSPENDED", "joinDate", "2023-03-10"));
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(adminService.getAllUsers());
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<Map<String, Object>> getUserDetails(@PathVariable Long id) {
-        return ResponseEntity.ok(Map.of("id", id, "name", "John Doe", "email", "john@test.com"));
+        return ResponseEntity.ok(Map.of("id", id));
     }
 
     @PutMapping("/users/{id}/suspend")
@@ -58,11 +53,7 @@ public class AdminController {
 
     @GetMapping("/campaigns")
     public ResponseEntity<List<Map<String, Object>>> getCampaigns() {
-        // Mock data
-        List<Map<String, Object>> campaigns = new ArrayList<>();
-        campaigns.add(Map.of("id", 1, "title", "Save the Forest", "owner", "John Doe", "category", "Environment", "goal", 50000, "raised", 25000, "status", "ACTIVE", "createdDate", "2023-01-05"));
-        campaigns.add(Map.of("id", 2, "title", "New Tech Startup", "owner", "Jane Smith", "category", "Technology", "goal", 100000, "raised", 10000, "status", "DRAFT", "createdDate", "2023-04-12"));
-        return ResponseEntity.ok(campaigns);
+        return ResponseEntity.ok(adminService.getAllCampaigns());
     }
 
     @PutMapping("/campaigns/{id}/approve")
@@ -85,9 +76,7 @@ public class AdminController {
 
     @GetMapping("/donations")
     public ResponseEntity<List<Map<String, Object>>> getDonations() {
-        List<Map<String, Object>> donations = new ArrayList<>();
-        donations.add(Map.of("id", 1, "donorName", "Alice", "amount", 500, "campaign", "Save the Forest", "date", "2023-05-01"));
-        return ResponseEntity.ok(donations);
+        return ResponseEntity.ok(adminService.getAllDonations());
     }
 
     @GetMapping("/analytics/monthly")

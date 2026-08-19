@@ -3,302 +3,381 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Donate - Crowdfund Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Make a Donation - CrowdHope</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --bg-dark: #0f172a;
-            --glass-bg: rgba(30, 41, 59, 0.7);
+            --surface: #1e293b;
+            --glass-bg: rgba(30, 41, 59, 0.85);
             --glass-border: rgba(255, 255, 255, 0.1);
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #10b981;
+            --accent-hover: #059669;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
         }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
         body {
-            font-family: 'Outfit', sans-serif;
             background-color: var(--bg-dark);
+            background-image: radial-gradient(circle at top right, #1e3a5f 0%, transparent 40%),
+                              radial-gradient(circle at bottom left, #1a1150 0%, transparent 40%);
             color: var(--text-main);
-            margin: 0;
-            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .page-container {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding: 2.5rem 1.5rem;
         }
-        .container {
+        .card {
             width: 100%;
-            max-width: 500px;
-            padding: 2rem;
+            max-width: 520px;
+            padding: 2.25rem;
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border-radius: 1.25rem;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 25px 60px -15px rgba(0,0,0,0.5);
         }
         h2 {
-            margin-top: 0;
-            font-weight: 700;
-            font-size: 24px;
+            font-weight: 800;
+            font-size: 1.75rem;
             text-align: center;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .campaign-summary {
-            background: rgba(255,255,255,0.05);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
+        .subtitle {
             text-align: center;
-            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+        .campaign-box {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--glass-border);
+            padding: 1rem 1.25rem;
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
         }
         .amount-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+            gap: 0.75rem;
             margin-bottom: 1rem;
         }
         .amount-btn {
             background: rgba(255,255,255,0.05);
             border: 1px solid var(--glass-border);
             color: var(--text-main);
-            padding: 10px;
-            border-radius: 8px;
+            padding: 0.75rem;
+            border-radius: 0.6rem;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             font-weight: 600;
+            font-size: 0.95rem;
+            text-align: center;
         }
         .amount-btn:hover, .amount-btn.active {
-            background: var(--accent);
-            border-color: var(--accent);
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
         }
         .input-group {
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.25rem;
             display: flex;
             flex-direction: column;
         }
         label {
             font-size: 0.85rem;
             color: var(--text-muted);
-            margin-bottom: 5px;
+            margin-bottom: 0.4rem;
+            font-weight: 600;
         }
         input, textarea {
-            background: rgba(255,255,255,0.05);
+            background: rgba(15, 23, 42, 0.7);
             border: 1px solid var(--glass-border);
             color: var(--text-main);
-            padding: 12px;
-            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            border-radius: 0.6rem;
             font-family: inherit;
+            font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.3s;
+            transition: border-color 0.2s;
         }
         input:focus, textarea:focus {
-            border-color: var(--accent);
+            border-color: var(--primary);
         }
         .checkbox-group {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.6rem;
             margin-bottom: 1.5rem;
+            cursor: pointer;
             font-size: 0.9rem;
             color: var(--text-muted);
         }
-        button.submit-btn {
+        .checkbox-group input {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+        .btn-submit {
             width: 100%;
-            background: var(--accent);
-            color: #fff;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            padding: 1rem;
             border: none;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 0.75rem;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+            margin-bottom: 0.75rem;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+        .btn-sandbox {
+            width: 100%;
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            padding: 0.85rem;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            transition: all 0.2s;
         }
-        button.submit-btn:hover {
-            background: var(--accent-hover);
+        .btn-sandbox:hover {
+            background: rgba(16, 185, 129, 0.25);
         }
-        #success-screen {
+        .success-screen {
             display: none;
             text-align: center;
+            padding: 1.5rem 0;
         }
-        #success-screen h3 {
-            color: #10b981;
-            font-size: 28px;
+        .success-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
         }
-        .receipt-btn {
+        .btn-receipt {
             display: inline-block;
-            margin-top: 20px;
-            background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 10px 20px;
-            border-radius: 8px;
+            margin-top: 1.5rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1.75rem;
+            border-radius: 0.6rem;
             text-decoration: none;
-            transition: all 0.3s;
-        }
-        .receipt-btn:hover {
-            background: var(--accent);
-            color: #fff;
+            font-weight: 600;
         }
     </style>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
+    <script src="js/navbar.js"></script>
 
-<div class="container" id="donation-form-container">
-    <h2>Make a Donation</h2>
-    <div class="campaign-summary" id="campaign-info">
-        Loading campaign info...
+    <div class="page-container">
+        <div class="card">
+            <div id="donation-form-container">
+                <h2>Support Cause</h2>
+                <p class="subtitle">Your contribution creates lasting positive change.</p>
+
+                <div class="campaign-box" id="campaign-title-box">
+                    Campaign: <strong id="campaign-name">Loading...</strong>
+                </div>
+
+                <div class="amount-grid">
+                    <button type="button" class="amount-btn" data-val="100">INR 100</button>
+                    <button type="button" class="amount-btn active" data-val="500">INR 500</button>
+                    <button type="button" class="amount-btn" data-val="1000">INR 1,000</button>
+                    <button type="button" class="amount-btn" data-val="2500">INR 2,500</button>
+                    <button type="button" class="amount-btn" data-val="5000">INR 5,000</button>
+                    <button type="button" class="amount-btn" id="custom-amount-btn">Custom</button>
+                </div>
+
+                <div class="input-group" id="custom-amount-group" style="display:none;">
+                    <label>Custom Donation Amount (INR)</label>
+                    <input type="number" id="custom-amount" placeholder="Enter amount in INR" min="10">
+                </div>
+
+                <div class="input-group">
+                    <label>Personal Message (Optional)</label>
+                    <textarea id="message" rows="3" placeholder="Words of encouragement for the organizer..."></textarea>
+                </div>
+
+                <label class="checkbox-group">
+                    <input type="checkbox" id="isAnonymous">
+                    Make my donation anonymous on the public page
+                </label>
+
+                <button class="btn-submit" id="donate-btn">Donate INR 500</button>
+                <button class="btn-sandbox" id="sandbox-btn" onclick="executeSandboxDonation()">Complete Instant Test Donation (Sandbox)</button>
+            </div>
+
+            <div class="success-screen" id="success-screen">
+                <div class="success-icon">&#10004;</div>
+                <h3 style="font-size:1.75rem; margin-bottom:0.5rem;">Thank You!</h3>
+                <p style="color:var(--text-muted); font-size:1rem;">Your donation was processed successfully.</p>
+                <div style="margin-top:2rem; display:flex; flex-direction:column; gap:0.75rem;">
+                    <button id="download-receipt-btn" class="btn-receipt" onclick="downloadCompletedReceipt()">Download Tax Receipt (PDF)</button>
+                    <a href="my-donations.html" class="btn-sandbox" style="text-align:center; text-decoration:none;">View My Donations</a>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="amount-grid">
-        <button class="amount-btn" data-val="100">₹100</button>
-        <button class="amount-btn" data-val="500">₹500</button>
-        <button class="amount-btn active" data-val="1000">₹1000</button>
-        <button class="amount-btn" data-val="2500">₹2500</button>
-        <button class="amount-btn" data-val="5000">₹5000</button>
-        <button class="amount-btn" id="custom-amount-btn">Custom</button>
-    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const campaignId = urlParams.get('id') || 1;
+        const initialAmount = urlParams.get('amount') || 500;
+        let selectedAmount = initialAmount;
+        let completedDonationId = null;
+        const token = localStorage.getItem('token');
 
-    <div class="input-group" id="custom-amount-group" style="display:none;">
-        <label>Custom Amount (₹)</label>
-        <input type="number" id="custom-amount" placeholder="Enter amount">
-    </div>
-
-    <div class="input-group">
-        <label>Message of Support (Optional)</label>
-        <textarea id="message" rows="3" placeholder="Leave a message for the campaign..."></textarea>
-    </div>
-
-    <div class="checkbox-group">
-        <input type="checkbox" id="isAnonymous">
-        <label for="isAnonymous">Make this donation anonymous</label>
-    </div>
-
-    <button class="submit-btn" id="donate-btn">Donate ₹1000</button>
-</div>
-
-<div class="container" id="success-screen">
-    <h3>🎉 Payment Successful!</h3>
-    <p>Thank you for your generous contribution.</p>
-    <a href="#" class="receipt-btn" id="download-receipt">Download Receipt</a>
-    <br><br>
-    <a href="/my-donations.html" style="color: var(--text-muted);">View My Donations</a>
-</div>
-
-<script>
-    let selectedAmount = 1000;
-    const campaignId = new URLSearchParams(window.location.search).get('campaignId') || 1;
-    let donationId = null;
-
-    document.getElementById('campaign-info').innerText = "Supporting Campaign #" + campaignId;
-
-    document.querySelectorAll('.amount-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
-            e.target.classList.add('active');
-            
-            if (e.target.id === 'custom-amount-btn') {
-                document.getElementById('custom-amount-group').style.display = 'flex';
-                selectedAmount = document.getElementById('custom-amount').value || 0;
-            } else {
-                document.getElementById('custom-amount-group').style.display = 'none';
-                selectedAmount = e.target.getAttribute('data-val');
-                document.getElementById('donate-btn').innerText = `Donate ₹${selectedAmount}`;
-            }
-        });
-    });
-
-    document.getElementById('custom-amount').addEventListener('input', (e) => {
-        selectedAmount = e.target.value;
-        document.getElementById('donate-btn').innerText = `Donate ₹${selectedAmount}`;
-    });
-
-    document.getElementById('donate-btn').addEventListener('click', async () => {
-        if(selectedAmount < 1) {
-            alert("Please enter a valid amount");
-            return;
+        // Check authentication
+        if (!token) {
+            alert('Please log in to make a donation.');
+            window.location.href = 'login.html';
         }
 
-        const payload = {
-            campaignId: campaignId,
-            amount: selectedAmount,
-            message: document.getElementById('message').value,
-            isAnonymous: document.getElementById('isAnonymous').checked
-        };
+        // Fetch Campaign Info
+        async function fetchCampaignDetails() {
+            try {
+                const res = await fetch('/api/campaigns/' + campaignId);
+                if (res.ok) {
+                    const c = await res.json();
+                    document.getElementById('campaign-name').innerText = c.title || 'Campaign #' + campaignId;
+                }
+            } catch (e) {
+                document.getElementById('campaign-name').innerText = 'Campaign #' + campaignId;
+            }
+        }
+        fetchCampaignDetails();
 
-        try {
-            const initRes = await fetch('/api/donations/initiate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+        // Amount buttons
+        document.querySelectorAll('.amount-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                
+                if (e.target.id === 'custom-amount-btn') {
+                    document.getElementById('custom-amount-group').style.display = 'flex';
+                    selectedAmount = parseFloat(document.getElementById('custom-amount').value) || 0;
+                } else {
+                    document.getElementById('custom-amount-group').style.display = 'none';
+                    selectedAmount = parseFloat(e.target.getAttribute('data-val'));
+                    document.getElementById('donate-btn').innerText = 'Donate INR ' + selectedAmount.toLocaleString('en-IN');
+                }
             });
-            const data = await initRes.json();
+        });
 
-            if (!data.orderId) {
-                alert("Failed to initiate payment");
+        document.getElementById('custom-amount').addEventListener('input', (e) => {
+            selectedAmount = parseFloat(e.target.value) || 0;
+            document.getElementById('donate-btn').innerText = 'Donate INR ' + (selectedAmount > 0 ? selectedAmount.toLocaleString('en-IN') : '0');
+        });
+
+        // Instant Sandbox Donation
+        async function executeSandboxDonation() {
+            if (!selectedAmount || selectedAmount < 10) {
+                alert("Please enter a donation amount of at least INR 10.");
                 return;
             }
 
-            donationId = data.donationId;
-
-            const options = {
-                "key": data.key, 
-                "amount": data.amount * 100, 
-                "currency": data.currency,
-                "name": "Crowdfund Platform",
-                "description": "Donation for Campaign #" + campaignId,
-                "order_id": data.orderId, 
-                "handler": async function (response) {
-                    verifyPayment(response.razorpay_order_id, response.razorpay_payment_id, response.razorpay_signature);
-                },
-                "prefill": {
-                    "name": "John Doe", 
-                    "email": "johndoe@example.com"
-                },
-                "theme": {
-                    "color": "#3b82f6"
-                }
+            const payload = {
+                campaignId: parseInt(campaignId),
+                amount: selectedAmount,
+                message: document.getElementById('message').value.trim(),
+                isAnonymous: document.getElementById('isAnonymous').checked
             };
-            const rzp1 = new Razorpay(options);
-            rzp1.open();
 
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Something went wrong");
-        }
-    });
-
-    async function verifyPayment(orderId, paymentId, signature) {
-        try {
-            const res = await fetch('/api/donations/verify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    razorpayOrderId: orderId,
-                    razorpayPaymentId: paymentId,
-                    razorpaySignature: signature,
-                    donationId: donationId
-                })
-            });
-
-            if(res.ok) {
-                document.getElementById('donation-form-container').style.display = 'none';
-                document.getElementById('success-screen').style.display = 'block';
-                confetti({
-                    particleCount: 150,
-                    spread: 70,
-                    origin: { y: 0.6 }
+            try {
+                const initRes = await fetch('/api/donations/initiate', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token 
+                    },
+                    body: JSON.stringify(payload)
                 });
-                
-                document.getElementById('download-receipt').href = `/api/donations/${donationId}/receipt`;
-            } else {
-                alert("Payment verification failed");
+                const data = await initRes.json();
+
+                if (!data.donationId) {
+                    alert("Failed to initiate donation: " + (data.error || 'Unknown error'));
+                    return;
+                }
+
+                // Verify with test signature
+                const verifyRes = await fetch('/api/donations/verify', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token 
+                    },
+                    body: JSON.stringify({
+                        razorpayOrderId: data.orderId || 'order_mock',
+                        razorpayPaymentId: 'pay_mock_' + Date.now(),
+                        razorpaySignature: 'mock_signature',
+                        donationId: data.donationId
+                    })
+                });
+
+                if (verifyRes.ok) {
+                    completedDonationId = data.donationId;
+                    showSuccess();
+                } else {
+                    alert("Payment verification failed.");
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert("Error completing donation: " + err.message);
             }
-        } catch (error) {
-            console.error(error);
         }
-    }
-</script>
+
+        document.getElementById('donate-btn').addEventListener('click', executeSandboxDonation);
+
+        function showSuccess() {
+            document.getElementById('donation-form-container').style.display = 'none';
+            document.getElementById('success-screen').style.display = 'block';
+            if (typeof confetti === 'function') {
+                confetti({ particleCount: 120, spread: 70, origin: { y: 0.6 } });
+            }
+        }
+
+        async function downloadCompletedReceipt() {
+            if (!completedDonationId) return;
+            try {
+                const res = await fetch('/api/donations/' + completedDonationId + '/receipt', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (!res.ok) throw new Error('Receipt generation error');
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'receipt_' + completedDonationId + '.pdf';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                alert('Failed to download receipt: ' + err.message);
+            }
+        }
+    </script>
 </body>
 </html>

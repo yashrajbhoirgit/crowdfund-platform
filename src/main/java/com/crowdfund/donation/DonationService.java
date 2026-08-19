@@ -27,6 +27,9 @@ public class DonationService {
     @Autowired
     private PdfReceiptService pdfReceiptService;
 
+    @Autowired
+    private com.crowdfund.campaign.CampaignRepository campaignRepository;
+
     @Transactional
     public DonationResponse initiateDonation(DonationRequest req, Long donorId, String donorName, String campaignTitle) {
         String receipt = "txn_" + UUID.randomUUID().toString().substring(0, 8);
@@ -62,15 +65,29 @@ public class DonationService {
             donation.setPaymentStatus(PaymentStatus.SUCCESS);
             donation.setRazorpayPaymentId(req.getRazorpayPaymentId());
             donation.setRazorpaySignature(req.getRazorpaySignature());
-            donation = donationRepository.save(donation);
+            final Donation savedDonation = donationRepository.save(donation);
 
-            emailService.sendDonationConfirmation(
-                    "donor@example.com", 
-                    donation.getDonorName(),
-                    donation.getAmount(),
-                    donation.getCampaignTitle(),
-                    donation.getTransactionId()
-            );
+            // Update campaign raised amount and donor count
+            if (savedDonation.getCampaignId() != null) {
+                campaignRepository.findById(savedDonation.getCampaignId()).ifPresent(c -> {
+                    java.math.BigDecimal currentRaised = c.getRaisedAmount() != null ? c.getRaisedAmount() : java.math.BigDecimal.ZERO;
+                    c.setRaisedAmount(currentRaised.add(savedDonation.getAmount()));
+                    c.setDonorsCount(c.getDonorsCount() + 1);
+                    campaignRepository.save(c);
+                });
+            }
+
+            try {
+                emailService.sendDonationConfirmation(
+                        "donor@example.com", 
+                        donation.getDonorName(),
+                        donation.getAmount(),
+                        donation.getCampaignTitle(),
+                        donation.getTransactionId()
+                );
+            } catch (Exception e) {
+                // Email failure should not fail donation
+            }
 
             return mapToResponse(donation);
         } else {

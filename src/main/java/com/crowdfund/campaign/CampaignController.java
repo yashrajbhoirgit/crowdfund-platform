@@ -2,9 +2,13 @@ package com.crowdfund.campaign;
 
 import com.crowdfund.campaign.dto.CampaignRequest;
 import com.crowdfund.campaign.dto.CampaignResponse;
+import com.crowdfund.auth.User;
+import com.crowdfund.auth.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,13 +22,15 @@ public class CampaignController {
 
     private final CampaignService campaignService;
     private final FileUploadService fileUploadService;
+    private final UserRepository userRepository;
 
-    // Simulate Auth User Retrieval - In real app, use @AuthenticationPrincipal
-    private Long getCurrentUserId() {
-        return 1L; // Mock user ID
-    }
-    private String getCurrentUserName() {
-        return "John Doe"; // Mock user name
+    private User getAuthenticatedUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserDetails ud) {
+            return userRepository.findByEmail(ud.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+        }
+        throw new RuntimeException("Not authenticated");
     }
 
     @GetMapping
@@ -56,26 +62,26 @@ public class CampaignController {
 
     @GetMapping("/my")
     public ResponseEntity<List<CampaignResponse>> getMyCampaigns() {
-        Long ownerId = getCurrentUserId();
+        Long ownerId = getAuthenticatedUser().getId();
         return ResponseEntity.ok(campaignService.getMyCampaigns(ownerId));
     }
 
     @PostMapping
     public ResponseEntity<CampaignResponse> createCampaign(@RequestBody CampaignRequest req) {
-        Long ownerId = getCurrentUserId();
-        String ownerName = getCurrentUserName();
-        return ResponseEntity.ok(campaignService.createCampaign(req, ownerId, ownerName));
+        User owner = getAuthenticatedUser();
+        return ResponseEntity.ok(campaignService.createCampaign(req, owner.getId(), owner.getName()));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CampaignResponse> updateCampaign(@PathVariable Long id, @RequestBody CampaignRequest req) {
-        Long ownerId = getCurrentUserId();
+        Long ownerId = getAuthenticatedUser().getId();
         return ResponseEntity.ok(campaignService.updateCampaign(id, req, ownerId));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCampaign(@PathVariable Long id) {
-        Long ownerId = getCurrentUserId();
+        User user = getAuthenticatedUser();
+        Long ownerId = (user.getRole() == com.crowdfund.auth.Role.ADMIN) ? -1L : user.getId();
         campaignService.deleteCampaign(id, ownerId);
         return ResponseEntity.noContent().build();
     }

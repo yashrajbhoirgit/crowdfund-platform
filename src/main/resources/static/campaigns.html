@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browse Campaigns - Crowdfund</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Browse Campaigns - CrowdHope</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0f172a;
@@ -12,6 +14,8 @@
             --primary: #3b82f6;
             --primary-hover: #2563eb;
             --accent: #10b981;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --glass-bg: rgba(30, 41, 59, 0.7);
@@ -19,74 +23,96 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; min-height: 100vh; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
         
-        .header { text-align: center; margin-bottom: 3rem; }
-        .header h1 { font-size: 2.5rem; margin-bottom: 1rem; background: linear-gradient(to right, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .search-bar { display: flex; gap: 1rem; max-width: 600px; margin: 0 auto 2rem; }
-        .search-bar input { flex: 1; padding: 1rem 1.5rem; border-radius: 99px; background: var(--surface-color); border: 1px solid var(--border); color: white; font-size: 1rem; outline: none; transition: border-color 0.3s; }
-        .search-bar input:focus { border-color: var(--primary); }
-        .btn-primary { background: var(--primary); color: white; border: none; padding: 1rem 2rem; border-radius: 99px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
-        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .header { text-align: center; margin-bottom: 2.5rem; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 0.5rem; background: linear-gradient(to right, #60a5fa, #c084fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header p { color: var(--text-muted); font-size: 1.1rem; }
 
-        .categories { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-bottom: 3rem; }
-        .category-tab { padding: 0.5rem 1.5rem; background: var(--surface-color); border: 1px solid var(--border); border-radius: 99px; color: var(--text-muted); cursor: pointer; transition: all 0.3s; }
+        .search-bar { display: flex; gap: 0.75rem; max-width: 600px; margin: 0 auto 2rem; }
+        .search-bar input { flex: 1; padding: 0.85rem 1.5rem; border-radius: 99px; background: var(--surface-color); border: 1px solid var(--border); color: white; font-size: 1rem; outline: none; transition: border-color 0.3s; }
+        .search-bar input:focus { border-color: var(--primary); }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 0.85rem 1.75rem; border-radius: 99px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+        .categories { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: center; margin-bottom: 2.5rem; }
+        .category-tab { padding: 0.45rem 1.25rem; background: var(--surface-color); border: 1px solid var(--border); border-radius: 99px; color: var(--text-muted); cursor: pointer; font-size: 0.9rem; font-weight: 500; transition: all 0.25s; }
         .category-tab.active, .category-tab:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .campaign-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem; }
+        .campaign-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2rem; }
         
-        .card { background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: 1rem; border: 1px solid var(--border); overflow: hidden; transition: transform 0.3s; display: flex; flex-direction: column; }
-        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
-        .card-img { width: 100%; height: 200px; object-fit: cover; background: #334155; }
+        .card { background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: 1rem; border: 1px solid var(--border); overflow: hidden; transition: transform 0.3s, box-shadow 0.3s; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-6px); box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5); }
+        .card-img { width: 100%; height: 200px; object-fit: cover; background: #1e293b; display: block; }
         .card-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
-        .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-        .card-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: white; text-decoration: none; }
-        .card-desc { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; flex: 1; }
+        .badge { display: inline-block; padding: 0.2rem 0.75rem; border-radius: 99px; font-size: 0.78rem; font-weight: 600; margin-bottom: 0.85rem; background: rgba(59, 130, 246, 0.2); color: #60a5fa; align-self: flex-start; }
+        .card-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: white; text-decoration: none; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-title:hover { color: #60a5fa; }
+        .card-desc { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.25rem; flex: 1; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         
-        .progress-container { margin-bottom: 1.5rem; }
+        .progress-container { margin-bottom: 1.25rem; }
         .progress-bar-bg { background: #334155; height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 0.5rem; }
         .progress-bar-fill { background: var(--accent); height: 100%; width: 0; transition: width 1s ease-in-out; }
         .stats-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted); }
-        .stats-val { color: white; font-weight: 600; font-size: 1rem; }
-        
-        .skeleton { animation: pulse 1.5s infinite; background: linear-gradient(90deg, #334155 0%, #475569 50%, #334155 100%); background-size: 200% 100%; }
-        @keyframes pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .stats-val { color: white; font-weight: 700; font-size: 0.95rem; }
 
+        .card-actions { display: flex; gap: 0.5rem; margin-top: auto; }
+        .btn-support { flex: 1; padding: 0.75rem 1rem; background: var(--primary); color: white; border: none; border-radius: 0.5rem; font-weight: 600; text-align: center; text-decoration: none; font-size: 0.9rem; transition: all 0.2s; }
+        .btn-support:hover { background: var(--primary-hover); }
+        .btn-card-delete { padding: 0.75rem 0.85rem; background: rgba(239, 68, 68, 0.12); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 0.5rem; font-weight: 600; cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+        .btn-card-delete:hover { background: rgba(239, 68, 68, 0.25); border-color: rgba(239, 68, 68, 0.6); color: white; }
+        
+        .empty-state { text-align: center; padding: 4rem 1rem; color: var(--text-muted); grid-column: 1 / -1; }
+        .empty-state h3 { font-size: 1.5rem; color: var(--text-main); margin-bottom: 0.5rem; }
+
+        .skeleton { animation: pulse 1.5s infinite; background: linear-gradient(90deg, #1e293b 0%, #334155 50%, #1e293b 100%); background-size: 200% 100%; }
+        @keyframes pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
 <body>
+    <script src="js/navbar.js"></script>
+
     <div class="container">
         <div class="header">
             <h1>Discover Campaigns</h1>
-            <p>Support the causes you care about</p>
+            <p>Support meaningful causes or create your own campaign</p>
         </div>
 
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search campaigns by title...">
+            <input type="text" id="searchInput" placeholder="Search campaigns by title..." onkeypress="if(event.key==='Enter') searchCampaigns()">
             <button class="btn-primary" onclick="searchCampaigns()">Search</button>
         </div>
 
         <div class="categories" id="categoryTabs">
-            <div class="category-tab active" onclick="loadCampaigns()">All</div>
+            <div class="category-tab active" onclick="loadCampaigns(this)">All</div>
             <div class="category-tab" onclick="loadCampaignsByCategory('Education', this)">Education</div>
             <div class="category-tab" onclick="loadCampaignsByCategory('Health', this)">Health</div>
             <div class="category-tab" onclick="loadCampaignsByCategory('Environment', this)">Environment</div>
             <div class="category-tab" onclick="loadCampaignsByCategory('Disaster Relief', this)">Disaster Relief</div>
+            <div class="category-tab" onclick="loadCampaignsByCategory('Community', this)">Community</div>
         </div>
 
         <div class="campaign-grid" id="campaignGrid">
-            <!-- Skeleton Loading -->
-            <div class="card"><div class="card-img skeleton"></div><div class="card-body"><div class="skeleton" style="height:20px; width:30%; margin-bottom:1rem;"></div><div class="skeleton" style="height:24px; margin-bottom:0.5rem;"></div><div class="skeleton" style="height:60px; margin-bottom:1.5rem;"></div></div></div>
-            <div class="card"><div class="card-img skeleton"></div><div class="card-body"><div class="skeleton" style="height:20px; width:30%; margin-bottom:1rem;"></div><div class="skeleton" style="height:24px; margin-bottom:0.5rem;"></div><div class="skeleton" style="height:60px; margin-bottom:1.5rem;"></div></div></div>
-            <div class="card"><div class="card-img skeleton"></div><div class="card-body"><div class="skeleton" style="height:20px; width:30%; margin-bottom:1rem;"></div><div class="skeleton" style="height:24px; margin-bottom:0.5rem;"></div><div class="skeleton" style="height:60px; margin-bottom:1.5rem;"></div></div></div>
+            <!-- Loading Skeletons -->
+            <div class="card"><div class="card-img skeleton"></div><div class="card-body"><div class="skeleton" style="height:18px; width:30%; margin-bottom:1rem; border-radius:4px;"></div><div class="skeleton" style="height:24px; margin-bottom:0.5rem; border-radius:4px;"></div><div class="skeleton" style="height:50px; margin-bottom:1.5rem; border-radius:4px;"></div></div></div>
+            <div class="card"><div class="card-img skeleton"></div><div class="card-body"><div class="skeleton" style="height:18px; width:30%; margin-bottom:1rem; border-radius:4px;"></div><div class="skeleton" style="height:24px; margin-bottom:0.5rem; border-radius:4px;"></div><div class="skeleton" style="height:50px; margin-bottom:1.5rem; border-radius:4px;"></div></div></div>
+            <div class="card"><div class="card-img skeleton"></div><div class="card-body"><div class="skeleton" style="height:18px; width:30%; margin-bottom:1rem; border-radius:4px;"></div><div class="skeleton" style="height:24px; margin-bottom:0.5rem; border-radius:4px;"></div><div class="skeleton" style="height:50px; margin-bottom:1.5rem; border-radius:4px;"></div></div></div>
         </div>
     </div>
 
     <script>
+        const token = localStorage.getItem('token');
+        const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+        function formatINR(val) {
+            if (!val && val !== 0) return 'INR 0';
+            return 'INR ' + Number(val).toLocaleString('en-IN');
+        }
+
         async function fetchAPI(url) {
             try {
                 const res = await fetch(url);
+                if (!res.ok) throw new Error('Status ' + res.status);
                 return await res.json();
             } catch (err) {
                 console.error(err);
@@ -97,49 +123,104 @@
         function renderCampaigns(campaigns) {
             const grid = document.getElementById('campaignGrid');
             grid.innerHTML = '';
-            if(!campaigns || campaigns.length === 0) {
-                grid.innerHTML = '<p>No campaigns found.</p>';
+            
+            const list = Array.isArray(campaigns) ? campaigns : (campaigns && campaigns.content ? campaigns.content : []);
+
+            if (list.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No campaigns found</h3>
+                        <p>Be the first one to start a campaign!</p>
+                        <a href="create-campaign.html" class="btn-primary" style="display:inline-block; text-decoration:none; margin-top:1.5rem;">Start Campaign</a>
+                    </div>
+                `;
                 return;
             }
             
-            campaigns.forEach(c => {
+            list.forEach(c => {
                 const percentage = c.progressPercentage || 0;
                 const daysLeft = c.deadline ? Math.max(0, Math.ceil((new Date(c.deadline) - new Date()) / (1000 * 60 * 60 * 24))) : 0;
-                const imageUrl = c.imageUrl || 'https://via.placeholder.com/400x200/1e293b/ffffff?text=No+Image';
+                const imageUrl = c.imageUrl || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&auto=format&fit=crop&q=80';
                 
+                const isOwnerOrAdmin = currentUser && (currentUser.userId == c.ownerId || currentUser.role === 'ADMIN');
+                const deleteButtonHtml = isOwnerOrAdmin ? `
+                    <button onclick="deleteCardCampaign(${c.id}, '${escapeHtml(c.title || 'Campaign')}')" class="btn-card-delete" title="Delete this campaign">Delete</button>
+                ` : '';
+
                 grid.innerHTML += `
-                    <div class="card">
-                        <img src="${imageUrl}" alt="Campaign" class="card-img">
+                    <div class="card" id="campaign-card-${c.id}">
+                        <img src="${imageUrl}" alt="Campaign" class="card-img" onerror="this.src='https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&auto=format&fit=crop&q=80'">
                         <div class="card-body">
-                            <span class="badge">${c.category || 'Other'}</span>
-                            <a href="campaign-detail.html?id=${c.id}" class="card-title">${c.title}</a>
-                            <p class="card-desc">${c.shortDescription || c.description.substring(0, 100) + '...'}</p>
+                            <span class="badge">${escapeHtml(c.category || 'Cause')}</span>
+                            <a href="campaign-detail.html?id=${c.id}" class="card-title">${escapeHtml(c.title || 'Untitled')}</a>
+                            <p class="card-desc">${escapeHtml(c.shortDescription || c.description || 'No description.')}</p>
                             
                             <div class="progress-container">
                                 <div class="progress-bar-bg">
-                                    <div class="progress-bar-fill" style="width: ${percentage}%"></div>
+                                    <div class="progress-bar-fill" style="width: ${Math.min(percentage, 100)}%"></div>
                                 </div>
                                 <div class="stats-row">
-                                    <div><span class="stats-val">$${c.raisedAmount}</span> raised</div>
+                                    <div><span class="stats-val">${formatINR(c.raisedAmount)}</span> raised</div>
                                     <div><span class="stats-val">${percentage}%</span></div>
                                 </div>
-                                <div class="stats-row" style="margin-top:0.5rem">
-                                    <div>Goal: $${c.goalAmount}</div>
-                                    <div>${daysLeft} days left</div>
+                                <div class="stats-row" style="margin-top:0.4rem; font-size:0.8rem;">
+                                    <div>Goal: ${formatINR(c.goalAmount)}</div>
+                                    <div>${daysLeft > 0 ? daysLeft + ' days left' : 'Ended'}</div>
                                 </div>
                             </div>
-                            <a href="campaign-detail.html?id=${c.id}" class="btn-primary" style="text-align:center; text-decoration:none; display:block;">Support Now</a>
+
+                            <div class="card-actions">
+                                <a href="campaign-detail.html?id=${c.id}" class="btn-support">View &amp; Support</a>
+                                ${deleteButtonHtml}
+                            </div>
                         </div>
                     </div>
                 `;
             });
         }
 
-        async function loadCampaigns() {
-            updateTabs(document.querySelector('.category-tab'));
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, function (m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+            });
+        }
+
+        async function deleteCardCampaign(id, title) {
+            if (!token) {
+                alert('Please sign in to delete this campaign.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            if (!confirm('Are you sure you want to delete "' + title + '"?\n\nThis will permanently remove the campaign.')) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/campaigns/' + id, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (res.ok || res.status === 204) {
+                    alert('Campaign deleted successfully.');
+                    const card = document.getElementById('campaign-card-' + id);
+                    if (card) card.remove();
+                } else if (res.status === 403) {
+                    alert('Permission denied. You can only delete your own campaigns or as an Admin.');
+                } else {
+                    throw new Error('Server returned ' + res.status);
+                }
+            } catch (err) {
+                alert('Failed to delete campaign: ' + err.message);
+            }
+        }
+
+        async function loadCampaigns(el) {
+            updateTabs(el || document.querySelector('.category-tab'));
             const data = await fetchAPI('/api/campaigns');
-            // Support both paginated response and list response
-            renderCampaigns(data.content ? data.content : data); 
+            renderCampaigns(data); 
         }
 
         async function loadCampaignsByCategory(category, el) {
@@ -149,8 +230,8 @@
         }
 
         async function searchCampaigns() {
-            const keyword = document.getElementById('searchInput').value;
-            if(!keyword) return loadCampaigns();
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (!keyword) return loadCampaigns();
             updateTabs(null);
             const data = await fetchAPI('/api/campaigns/search?keyword=' + encodeURIComponent(keyword));
             renderCampaigns(data);
@@ -158,10 +239,12 @@
 
         function updateTabs(activeEl) {
             document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-            if(activeEl) activeEl.classList.add('active');
+            if (activeEl) activeEl.classList.add('active');
         }
 
-        window.onload = loadCampaigns;
+        window.onload = function() {
+            loadCampaigns();
+        };
     </script>
 </body>
 </html>

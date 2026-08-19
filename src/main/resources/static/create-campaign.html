@@ -3,168 +3,551 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Campaign</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Create Campaign - CrowdHope</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-color: #0f172a;
             --surface-color: #1e293b;
             --primary: #3b82f6;
             --primary-hover: #2563eb;
+            --accent: #10b981;
+            --danger: #ef4444;
             --text-main: #f8fafc;
-            --border: rgba(255,255,255,0.1);
+            --text-muted: #94a3b8;
+            --border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(30, 41, 59, 0.7);
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 2rem; }
-        
-        .form-card { background: var(--surface-color); padding: 2.5rem; border-radius: 1rem; width: 100%; max-width: 700px; border: 1px solid var(--border); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
-        h2 { margin-bottom: 2rem; text-align: center; font-size: 2rem; }
-        
-        .step { display: none; }
-        .step.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .form-group { margin-bottom: 1.5rem; }
-        label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; }
-        input, select, textarea { width: 100%; padding: 0.75rem; background: #0f172a; border: 1px solid var(--border); color: white; border-radius: 0.5rem; font-size: 1rem; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
-        
-        .btn-group { display: flex; justify-content: space-between; margin-top: 2rem; }
-        button { padding: 0.75rem 2rem; border-radius: 0.5rem; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        .btn-prev { background: #334155; color: white; }
-        .btn-next, .btn-submit { background: var(--primary); color: white; }
-        
-        .progress-indicator { display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; }
-        .dot { width: 12px; height: 12px; border-radius: 50%; background: #334155; }
-        .dot.active { background: var(--primary); box-shadow: 0 0 10px var(--primary); }
-        
-        .file-drop { border: 2px dashed var(--border); padding: 2rem; text-align: center; border-radius: 0.5rem; cursor: pointer; }
-        .file-drop:hover { border-color: var(--primary); }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Outfit', sans-serif; }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at top right, #1e3a5f 0%, transparent 40%),
+                              radial-gradient(circle at bottom left, #1a1150 0%, transparent 40%);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 5rem;
+        }
+
+        .form-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.4rem;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 640px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-card {
+                padding: 1.75rem;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.45rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        label .required {
+            color: #f87171;
+            margin-left: 2px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border);
+            color: white;
+            border-radius: 0.6rem;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        select option {
+            background: #1e293b;
+            color: white;
+        }
+
+        .field-hint {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.35rem;
+        }
+
+        /* File Upload Box */
+        .file-upload-box {
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 0.75rem;
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+            background: rgba(15, 23, 42, 0.4);
+            position: relative;
+        }
+
+        .file-upload-box:hover,
+        .file-upload-box.drag-over {
+            border-color: var(--primary);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .upload-icon {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .upload-text {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            font-weight: 500;
+        }
+
+        .upload-text span {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .preview-container {
+            display: none;
+            margin-top: 1rem;
+            position: relative;
+            border-radius: 0.6rem;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+
+        .preview-container img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .preview-remove-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(239, 68, 68, 0.9);
+            color: white;
+            border: none;
+            border-radius: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .preview-remove-btn:hover {
+            background: var(--danger);
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            padding: 1.1rem;
+            border-radius: 0.75rem;
+            border: none;
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.45);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 0.9rem 1.25rem;
+            border-radius: 0.6rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.92rem;
+            display: none;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #86efac;
+        }
+
+        .auth-warning {
+            display: none;
+            text-align: center;
+            padding: 3rem 1.5rem;
+        }
+
+        .auth-warning h2 {
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-warning p {
+            color: var(--text-muted);
+            margin-bottom: 1.75rem;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 0.8rem 1.75rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0.6rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <div class="form-card">
-        <h2>Start a Campaign</h2>
-        <div class="progress-indicator" id="dots">
-            <div class="dot active"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
+    <script src="js/navbar.js"></script>
+
+    <div class="container">
+        <!-- Not Logged In Warning -->
+        <div class="form-card auth-warning" id="authWarning">
+            <h2>Sign in to start a campaign</h2>
+            <p>You need to be logged into your account to create and manage fundraising campaigns.</p>
+            <a href="login.html" class="btn-primary">Sign In</a>
         </div>
 
-        <form id="campaignForm">
-            <!-- Step 1 -->
-            <div class="step active" id="step1">
-                <div class="form-group">
-                    <label>Campaign Title</label>
-                    <input type="text" id="title" required placeholder="e.g. Clean Water Initiative">
-                </div>
-                <div class="form-group">
-                    <label>Category</label>
-                    <select id="category" required>
-                        <option value="Education">Education</option>
-                        <option value="Health">Health</option>
-                        <option value="Environment">Environment</option>
-                        <option value="Disaster Relief">Disaster Relief</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Goal Amount ($)</label>
-                    <input type="number" id="goalAmount" required placeholder="10000">
-                </div>
-                <div class="form-group">
-                    <label>Deadline</label>
-                    <input type="date" id="deadline" required>
-                </div>
-                <div class="btn-group">
-                    <div></div>
-                    <button type="button" class="btn-next" onclick="nextStep(2)">Next</button>
-                </div>
+        <!-- Main Form -->
+        <div class="form-card" id="formCard">
+            <div class="header">
+                <h1>Start a Campaign</h1>
+                <p>Fill out the details below to publish your fundraising campaign</p>
             </div>
 
-            <!-- Step 2 -->
-            <div class="step" id="step2">
-                <div class="form-group">
-                    <label>Short Description</label>
-                    <input type="text" id="shortDesc" required placeholder="Brief summary...">
-                </div>
-                <div class="form-group">
-                    <label>Full Story</label>
-                    <textarea id="description" rows="6" required placeholder="Tell your story..."></textarea>
-                </div>
-                <div class="btn-group">
-                    <button type="button" class="btn-prev" onclick="nextStep(1)">Back</button>
-                    <button type="button" class="btn-next" onclick="nextStep(3)">Next</button>
-                </div>
-            </div>
+            <div class="alert alert-error" id="alertError"></div>
+            <div class="alert alert-success" id="alertSuccess"></div>
 
-            <!-- Step 3 -->
-            <div class="step" id="step3">
-                <div class="form-group">
-                    <label>Campaign Image</label>
-                    <div class="file-drop" onclick="document.getElementById('imageFile').click()">
-                        <p>Click or drag image to upload</p>
-                        <input type="file" id="imageFile" style="display:none" accept="image/*">
+            <form id="campaignForm" onsubmit="handleFormSubmit(event)">
+                <div class="form-grid">
+                    <!-- Title -->
+                    <div class="form-group full-width">
+                        <label for="title">Campaign Title <span class="required">*</span></label>
+                        <input type="text" id="title" placeholder="e.g. Clean Drinking Water for Rural Schools" required maxlength="150">
+                        <div class="field-hint">A clear, inspiring headline for your cause.</div>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-group">
+                        <label for="category">Category <span class="required">*</span></label>
+                        <select id="category" required>
+                            <option value="">Select a Category</option>
+                            <option value="Education">Education</option>
+                            <option value="Health">Health &amp; Medical</option>
+                            <option value="Environment">Environment &amp; Nature</option>
+                            <option value="Disaster Relief">Disaster Relief</option>
+                            <option value="Community">Community Development</option>
+                            <option value="Animals">Animal Welfare</option>
+                            <option value="Technology">Technology &amp; Innovation</option>
+                            <option value="Other">Other Causes</option>
+                        </select>
+                    </div>
+
+                    <!-- Target Goal -->
+                    <div class="form-group">
+                        <label for="goalAmount">Target Goal Amount (INR) <span class="required">*</span></label>
+                        <input type="number" id="goalAmount" placeholder="e.g. 50000" min="100" step="10" required>
+                        <div class="field-hint">Minimum target is INR 100.</div>
+                    </div>
+
+                    <!-- Deadline -->
+                    <div class="form-group full-width">
+                        <label for="deadline">End Date / Deadline <span class="required">*</span></label>
+                        <input type="date" id="deadline" required>
+                        <div class="field-hint">Set the date when your fundraising campaign concludes.</div>
+                    </div>
+
+                    <!-- Short Summary -->
+                    <div class="form-group full-width">
+                        <label for="shortDescription">Short Summary <span class="required">*</span></label>
+                        <input type="text" id="shortDescription" placeholder="Brief 1-2 sentence overview shown in search and campaign cards" required maxlength="250">
+                    </div>
+
+                    <!-- Detailed Story -->
+                    <div class="form-group full-width">
+                        <label for="description">Full Story &amp; Details <span class="required">*</span></label>
+                        <textarea id="description" rows="6" placeholder="Explain the mission, who benefits, how funds will be used, and why people should contribute..." required></textarea>
+                    </div>
+
+                    <!-- Cover Image Upload -->
+                    <div class="form-group full-width">
+                        <label>Cover Photo (Optional)</label>
+                        
+                        <div class="file-upload-box" id="dropZone" onclick="document.getElementById('imageFile').click()">
+                            <span class="upload-icon">&#128247;</span>
+                            <p class="upload-text">Drag &amp; drop an image here, or <span>Browse</span></p>
+                            <div class="field-hint" style="margin-top:0.4rem;">Supports PNG, JPG, JPEG, WEBP (Max 5MB)</div>
+                            <input type="file" id="imageFile" accept="image/*" style="display:none;" onchange="handleFileSelected(this)">
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div class="preview-container" id="previewContainer">
+                            <img id="previewImg" src="" alt="Campaign Image Preview">
+                            <button type="button" class="preview-remove-btn" onclick="removeSelectedImage()">Remove</button>
+                        </div>
                     </div>
                 </div>
-                <div class="btn-group">
-                    <button type="button" class="btn-prev" onclick="nextStep(2)">Back</button>
-                    <button type="button" class="btn-submit" onclick="submitForm()">Create Campaign</button>
-                </div>
-            </div>
-        </form>
+
+                <button type="submit" class="btn-submit" id="submitBtn">Launch Campaign</button>
+            </form>
+        </div>
     </div>
 
     <script>
-        function nextStep(step) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('step' + step).classList.add('active');
-            
-            let dots = document.querySelectorAll('.dot');
-            dots.forEach((d, i) => {
-                if(i < step) d.classList.add('active');
-                else d.classList.remove('active');
-            });
+        let selectedFile = null;
+        const token = localStorage.getItem('token');
+
+        // Check authentication
+        if (!token) {
+            document.getElementById('formCard').style.display = 'none';
+            document.getElementById('authWarning').style.display = 'block';
+        } else {
+            // Set minimum deadline date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            document.getElementById('deadline').min = tomorrow.toISOString().split('T')[0];
         }
 
-        async function submitForm() {
-            const data = {
-                title: document.getElementById('title').value,
-                category: document.getElementById('category').value,
-                goalAmount: document.getElementById('goalAmount').value,
-                deadline: document.getElementById('deadline').value,
-                shortDescription: document.getElementById('shortDesc').value,
-                description: document.getElementById('description').value
+        // File Drag & Drop
+        const dropZone = document.getElementById('dropZone');
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                processFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function handleFileSelected(input) {
+            if (input.files && input.files[0]) {
+                processFile(input.files[0]);
+            }
+        }
+
+        function processFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showError('Please upload an image file (PNG, JPG, WEBP).');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                showError('Image file size must be less than 5MB.');
+                return;
+            }
+
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('previewContainer').style.display = 'block';
+                document.getElementById('dropZone').style.display = 'none';
             };
+            reader.readAsDataURL(file);
+        }
+
+        function removeSelectedImage() {
+            selectedFile = null;
+            document.getElementById('imageFile').value = '';
+            document.getElementById('previewContainer').style.display = 'none';
+            document.getElementById('dropZone').style.display = 'block';
+        }
+
+        // Form Submit
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            hideAlerts();
+
+            const title = document.getElementById('title').value.trim();
+            const category = document.getElementById('category').value;
+            const goalAmount = parseFloat(document.getElementById('goalAmount').value);
+            const deadline = document.getElementById('deadline').value;
+            const shortDescription = document.getElementById('shortDescription').value.trim();
+            const description = document.getElementById('description').value.trim();
+
+            if (!title || !category || isNaN(goalAmount) || !deadline || !shortDescription || !description) {
+                showError('Please fill out all required fields.');
+                return;
+            }
+
+            if (goalAmount < 100) {
+                showError('Target goal amount must be at least INR 100.');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publishing Campaign...';
 
             try {
-                // Assuming we have some auth token, maybe stored in localStorage in a real app
+                // 1. Create Campaign
                 const res = await fetch('/api/campaigns', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        title: title,
+                        category: category,
+                        goalAmount: goalAmount,
+                        deadline: deadline,
+                        shortDescription: shortDescription,
+                        description: description
+                    })
                 });
-                
-                if(!res.ok) throw new Error("Failed to create campaign");
-                const created = await res.json();
 
-                // Upload image if selected
-                const fileInput = document.getElementById('imageFile');
-                if(fileInput.files.length > 0) {
-                    const formData = new FormData();
-                    formData.append('file', fileInput.files[0]);
-                    await fetch('/api/campaigns/' + created.id + '/upload-image', {
-                        method: 'POST',
-                        body: formData
-                    });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.message || 'Failed to create campaign (Status ' + res.status + ')');
                 }
 
-                alert('Campaign created successfully!');
-                window.location.href = 'campaign-detail.html?id=' + created.id;
+                const campaign = await res.json();
+                const newCampaignId = campaign.id;
+
+                // 2. Upload Image if selected
+                if (selectedFile && newCampaignId) {
+                    submitBtn.textContent = 'Uploading Cover Image...';
+                    const formData = new FormData();
+                    formData.append('file', selectedFile);
+
+                    const imgRes = await fetch('/api/campaigns/' + newCampaignId + '/upload-image', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: formData
+                    });
+
+                    if (!imgRes.ok) {
+                        console.warn('Image upload failed, but campaign was created.');
+                    }
+                }
+
+                showSuccess('Campaign launched successfully! Redirecting...');
+                setTimeout(() => {
+                    window.location.href = 'campaign-detail.html?id=' + newCampaignId;
+                }, 1200);
 
             } catch (err) {
                 console.error(err);
-                alert('Error creating campaign.');
+                showError(err.message || 'Failed to create campaign. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Launch Campaign';
             }
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('alertError');
+            el.textContent = msg;
+            el.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('alertSuccess');
+            el.textContent = msg;
+            el.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hideAlerts() {
+            document.getElementById('alertError').style.display = 'none';
+            document.getElementById('alertSuccess').style.display = 'none';
         }
     </script>
 </body>
