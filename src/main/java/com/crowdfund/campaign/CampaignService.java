@@ -39,16 +39,28 @@ public class CampaignService {
         Campaign campaign = campaignRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Campaign not found"));
             
-        if (!campaign.getOwnerId().equals(ownerId)) {
+        if (ownerId != -1 && !campaign.getOwnerId().equals(ownerId)) {
             throw new RuntimeException("Not authorized to update this campaign");
         }
         
-        campaign.setTitle(req.getTitle());
-        campaign.setDescription(req.getDescription());
-        campaign.setShortDescription(req.getShortDescription());
-        campaign.setCategory(req.getCategory());
-        campaign.setGoalAmount(req.getGoalAmount());
-        campaign.setDeadline(req.getDeadline());
+        if (req.getTitle() != null && !req.getTitle().trim().isEmpty()) {
+            campaign.setTitle(req.getTitle().trim());
+        }
+        if (req.getDescription() != null && !req.getDescription().trim().isEmpty()) {
+            campaign.setDescription(req.getDescription().trim());
+        }
+        if (req.getShortDescription() != null && !req.getShortDescription().trim().isEmpty()) {
+            campaign.setShortDescription(req.getShortDescription().trim());
+        }
+        if (req.getCategory() != null && !req.getCategory().trim().isEmpty()) {
+            campaign.setCategory(req.getCategory().trim());
+        }
+        if (req.getGoalAmount() != null) {
+            campaign.setGoalAmount(req.getGoalAmount());
+        }
+        if (req.getDeadline() != null) {
+            campaign.setDeadline(req.getDeadline());
+        }
         
         return CampaignResponse.fromEntity(campaignRepository.save(campaign));
     }

@@ -189,12 +189,6 @@
                     <label for="email">Email Address</label>
                 </div>
                 <div class="input-group">
-                    <select id="role">
-                        <option value="USER">Backer (User)</option>
-                        <option value="CAMPAIGN_OWNER">Creator (Campaign Owner)</option>
-                    </select>
-                </div>
-                <div class="input-group">
                     <input type="password" id="password" placeholder=" " required>
                     <label for="password">Password</label>
                 </div>
@@ -245,7 +239,6 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPass = document.getElementById('confirmPassword').value;
-            const role = document.getElementById('role').value;
             const errorMsg = document.getElementById('error-msg');
             
             if (password !== confirmPass) {
@@ -258,7 +251,7 @@
                 const response = await fetch('/api/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, password, role })
+                    body: JSON.stringify({ name, email, password, role: 'USER' })
                 });
                 
                 if (response.ok) {

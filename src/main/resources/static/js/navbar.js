@@ -201,7 +201,7 @@
 
             authButtonsHtml = `
                 ${isAdmin ? `<a href="admin-dashboard.html" class="nb-btn nb-btn-outline">Admin Panel</a>` : ''}
-                <a href="my-donations.html" class="nb-btn nb-btn-outline">My Donations</a>
+                <a href="my-donations.html" class="nb-btn nb-btn-outline" title="View your donations and total contributed amount">🤝 My Contributions</a>
                 <a href="profile.html" class="nb-user-chip">
                     <div class="nb-avatar">${initial}</div>
                     <span>${displayName}</span>
@@ -215,6 +215,8 @@
             `;
         }
 
+        const userNavHtml = user ? `<li><a href="my-donations.html" class="nb-link ${currentPage === 'my-donations.html' ? 'active' : ''}">My Contributions</a></li>` : '';
+
         nav.innerHTML = `
             <a href="index.html" class="nb-brand" title="Home">
                 <span class="nb-brand-dot"></span>
@@ -225,6 +227,7 @@
                 <li><a href="index.html" class="nb-link ${currentPage === 'index.html' || currentPage === '' ? 'active' : ''}">Home</a></li>
                 <li><a href="campaigns.html" class="nb-link ${currentPage === 'campaigns.html' ? 'active' : ''}">Explore</a></li>
                 <li><a href="create-campaign.html" class="nb-link ${currentPage === 'create-campaign.html' ? 'active' : ''}">Start Campaign</a></li>
+                ${userNavHtml}
             </ul>
 
             <div class="nb-auth-group">

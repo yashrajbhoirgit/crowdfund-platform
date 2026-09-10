@@ -219,6 +219,46 @@
         }
         .btn-action-view:hover { background: var(--primary); color: white; }
 
+        .btn-action-edit {
+            padding: 0.45rem 0.85rem;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-action-edit:hover { background: rgba(16, 185, 129, 0.25); color: white; }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center;
+            z-index: 1000; padding: 1.5rem;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #1e293b; border: 1px solid var(--border); border-radius: 1.25rem;
+            max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); position: relative;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-title { font-size: 1.3rem; font-weight: 700; color: white; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; padding: 0.25rem; line-height: 1; }
+        .modal-close:hover { color: white; }
+        .modal-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .btn-save-modal {
+            width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white; border: none; border-radius: 0.6rem; font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; margin-top: 0.5rem;
+        }
+        .btn-save-modal:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
+        .modal-alert { padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.88rem; display: none; }
+        .modal-alert.error { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+        .modal-alert.success { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #86efac; }
+
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -229,7 +269,7 @@
         .form-group { margin-bottom: 1rem; }
         .form-group.full { grid-column: 1 / -1; }
         .form-group label { display: block; margin-bottom: 0.4rem; color: #cbd5e1; font-size: 0.85rem; font-weight: 600; }
-        .form-group input, .form-group textarea {
+        .form-group input, .form-group textarea, .form-group select {
             width: 100%;
             padding: 0.75rem 1rem;
             background: rgba(15, 23, 42, 0.7);
@@ -282,6 +322,10 @@
                     <div id="display-location">Not specified</div>
                 </div>
                 <div class="info-row">
+                    <div class="info-label">Total Contributed</div>
+                    <div id="display-total-donated" style="color: var(--accent); font-weight: 700;">INR 0</div>
+                </div>
+                <div class="info-row">
                     <div class="info-label">About / Bio</div>
                     <div id="display-bio">No bio added yet.</div>
                 </div>
@@ -294,7 +338,7 @@
         <main class="glass-card">
             <div class="tabs">
                 <button type="button" class="tab active" onclick="switchTab('campaigns-tab', this)">My Campaigns</button>
-                <button type="button" class="tab" onclick="switchTab('donations-tab', this)">My Donations</button>
+                <button type="button" class="tab" onclick="switchTab('donations-tab', this)">🤝 My Contributions</button>
                 <button type="button" class="tab" id="settings-tab-btn" onclick="switchTab('settings-tab', this)">Edit Profile</button>
             </div>
 
@@ -309,14 +353,26 @@
                 </div>
             </div>
 
-            <!-- Tab 2: My Donations -->
+            <!-- Tab 2: My Contributions -->
             <div id="donations-tab" class="dashboard-content">
                 <div class="section-header">
-                    <h3>Recent Contributions</h3>
-                    <a href="my-donations.html" class="btn-create">View All Donations</a>
+                    <h3>My Contributions</h3>
+                    <a href="my-donations.html" class="btn-create">View All Contributions &amp; Receipts &rarr;</a>
                 </div>
+
+                <div id="contributionSummaryBox" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 0.75rem; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 1rem;">
+                    <div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Total Amount Contributed</div>
+                        <div id="profileTotalDonatedVal" style="font-size: 1.8rem; font-weight: 800; color: #34d399; margin-top: 0.2rem;">INR 0</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Causes Supported</div>
+                        <div id="profileCausesCountVal" style="font-size: 1.5rem; font-weight: 700; color: white; margin-top: 0.2rem;">0</div>
+                    </div>
+                </div>
+
                 <div id="userDonationsList">
-                    <div class="empty-placeholder">Loading your donations...</div>
+                    <div class="empty-placeholder">Loading your contributions...</div>
                 </div>
             </div>
 
@@ -350,8 +406,69 @@
                     </div>
                     <button type="submit" class="save-btn">Save Changes</button>
                 </form>
+
+                <!-- Danger Zone -->
+                <div class="danger-zone" style="margin-top: 2.5rem; padding: 1.5rem; border-radius: 0.75rem; border: 1px solid rgba(239, 68, 68, 0.35); background: rgba(239, 68, 68, 0.06);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h4 style="color: #f87171; font-size: 1.05rem; margin-bottom: 0.3rem;">⚠️ Delete Account</h4>
+                            <p style="color: var(--text-muted); font-size: 0.88rem; max-width: 480px;">
+                                Permanently delete your user account and profile. This action cannot be reversed.
+                            </p>
+                        </div>
+                        <button type="button" class="btn-delete-acc" onclick="deleteMyAccount()" style="padding: 0.75rem 1.4rem; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.45); border-radius: 0.6rem; color: #f87171; font-weight: 700; cursor: pointer; transition: all 0.2s;">
+                            🗑️ Delete My Account
+                        </button>
+                    </div>
+                </div>
             </div>
         </main>
+    </div>
+
+    <!-- Edit Campaign Modal -->
+    <div class="modal-overlay" id="profileEditModal" onclick="if(event.target===this) closeProfileEditModal()">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">✏️ Update Campaign Details</div>
+                <button class="modal-close" onclick="closeProfileEditModal()">&times;</button>
+            </div>
+            <div class="modal-alert" id="profileModalAlert"></div>
+            <form id="profileEditForm" onsubmit="handleProfileCampaignEdit(event)">
+                <input type="hidden" id="pEditId">
+                <div class="modal-form-grid">
+                    <div class="form-group full">
+                        <label for="pEditTitle">Campaign Title *</label>
+                        <input type="text" id="pEditTitle" required maxlength="150">
+                    </div>
+                    <div class="form-group">
+                        <label for="pEditCategory">Category *</label>
+                        <select id="pEditCategory" required>
+                            <option value="Education">Education</option>
+                            <option value="Health">Health &amp; Medical</option>
+                            <option value="Environment">Environment &amp; Nature</option>
+                            <option value="Community">Community</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="pEditGoal">Target Goal Amount (INR) *</label>
+                        <input type="number" id="pEditGoal" min="100" step="10" required>
+                    </div>
+                    <div class="form-group full">
+                        <label for="pEditDeadline">Campaign Deadline *</label>
+                        <input type="date" id="pEditDeadline" required>
+                    </div>
+                    <div class="form-group full">
+                        <label for="pEditShortDesc">Short Summary *</label>
+                        <input type="text" id="pEditShortDesc" required maxlength="250">
+                    </div>
+                    <div class="form-group full">
+                        <label for="pEditDesc">Full Story &amp; Details *</label>
+                        <textarea id="pEditDesc" rows="4" required></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn-save-modal" id="pSaveBtn">Save Changes</button>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -359,6 +476,8 @@
         if (!token) {
             window.location.href = 'login.html';
         }
+
+        let myCampaignsCache = [];
 
         function formatINR(val) {
             if (!val && val !== 0) return 'INR 0';
@@ -373,33 +492,25 @@
                 
                 if (res.ok) {
                     const user = await res.json();
-                    
                     document.getElementById('display-name').textContent = user.name || 'User';
                     document.getElementById('display-email').textContent = user.email || '';
                     document.getElementById('display-role').textContent = user.role || 'USER';
                     document.getElementById('display-location').textContent = user.location || 'Not specified';
                     document.getElementById('display-bio').textContent = user.bio || 'No bio added yet.';
-                    
                     const initial = (user.name || user.email || 'U')[0].toUpperCase();
                     document.getElementById('avatarInitials').textContent = initial;
-
                     document.getElementById('edit-name').value = user.name || '';
                     document.getElementById('edit-bio').value = user.bio || '';
                     document.getElementById('edit-location').value = user.location || '';
                     document.getElementById('edit-phone').value = user.phone || '';
                     document.getElementById('edit-website').value = user.website || '';
-
-                    // Load user's campaigns & donations
                     loadUserCampaigns();
                     loadUserDonations();
-
                 } else {
                     localStorage.removeItem('token');
                     window.location.href = 'login.html';
                 }
-            } catch (err) {
-                console.error('Error fetching profile', err);
-            }
+            } catch (err) { console.error('Error fetching profile', err); }
         }
 
         async function loadUserCampaigns() {
@@ -408,36 +519,76 @@
                 const res = await fetch('/api/campaigns/my', {
                     headers: { 'Authorization': 'Bearer ' + token }
                 });
-
                 if (!res.ok) throw new Error('Failed to load campaigns');
-
                 const campaigns = await res.json();
-
+                myCampaignsCache = campaigns || [];
                 if (!campaigns || campaigns.length === 0) {
-                    listEl.innerHTML = `
-                        <div class="empty-placeholder">
-                            <p style="margin-bottom:1rem;">You haven't launched any campaigns yet.</p>
-                            <a href="create-campaign.html" class="btn-create">Start Your First Campaign</a>
-                        </div>
-                    `;
+                    listEl.innerHTML = '<div class="empty-placeholder">You haven\'t launched any campaigns yet.</div>';
                     return;
                 }
-
                 listEl.innerHTML = campaigns.map(c => `
                     <div class="campaign-item">
                         <div>
                             <a href="campaign-detail.html?id=${c.id}" class="campaign-title">${escapeHtml(c.title || 'Untitled')}</a>
-                            <div class="campaign-meta">
-                                Category: ${escapeHtml(c.category || 'Cause')} &bull; Raised: <strong style="color:var(--accent);">${formatINR(c.raisedAmount)}</strong> of ${formatINR(c.goalAmount)}
-                            </div>
+                            <div class="campaign-meta">Category: ${escapeHtml(c.category || 'Cause')} &bull; Raised: <strong>${formatINR(c.raisedAmount)}</strong> of ${formatINR(c.goalAmount)}</div>
                         </div>
-                        <a href="campaign-detail.html?id=${c.id}" class="btn-action-view">View &amp; Manage</a>
+                        <div style="display:flex; gap:0.5rem;">
+                            <button onclick="openProfileEditModal(${c.id})" class="btn-action-edit">Edit</button>
+                            <a href="campaign-detail.html?id=${c.id}" class="btn-action-view">View</a>
+                        </div>
                     </div>
                 `).join('');
-
             } catch (err) {
                 listEl.innerHTML = '<div class="empty-placeholder" style="color:#f87171;">Unable to load your campaigns.</div>';
             }
+        }
+
+        function openProfileEditModal(id) {
+            const c = myCampaignsCache.find(item => item.id === id);
+            if (!c) return;
+            document.getElementById('pEditId').value = c.id;
+            document.getElementById('pEditTitle').value = c.title || '';
+            document.getElementById('pEditCategory').value = c.category || 'Education';
+            document.getElementById('pEditGoal').value = c.goalAmount || 1000;
+            document.getElementById('pEditDeadline').value = c.deadline ? c.deadline.split('T')[0] : '';
+            document.getElementById('pEditShortDesc').value = c.shortDescription || '';
+            document.getElementById('pEditDesc').value = c.description || '';
+            document.getElementById('profileModalAlert').style.display = 'none';
+            document.getElementById('profileEditModal').classList.add('active');
+        }
+
+        function closeProfileEditModal() { document.getElementById('profileEditModal').classList.remove('active'); }
+
+        async function handleProfileCampaignEdit(e) {
+            e.preventDefault();
+            const id = document.getElementById('pEditId').value;
+            const data = {
+                title: document.getElementById('pEditTitle').value.trim(),
+                category: document.getElementById('pEditCategory').value,
+                goalAmount: parseFloat(document.getElementById('pEditGoal').value),
+                deadline: document.getElementById('pEditDeadline').value,
+                shortDescription: document.getElementById('pEditShortDesc').value.trim(),
+                description: document.getElementById('pEditDesc').value.trim()
+            };
+            const alertEl = document.getElementById('profileModalAlert');
+            const saveBtn = document.getElementById('pSaveBtn');
+            saveBtn.disabled = true;
+            try {
+                const res = await fetch('/api/campaigns/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify(data)
+                });
+                if (!res.ok) throw new Error('Failed to update campaign');
+                alertEl.className = 'modal-alert success';
+                alertEl.textContent = 'Campaign updated!';
+                alertEl.style.display = 'block';
+                setTimeout(() => { closeProfileEditModal(); loadUserCampaigns(); }, 800);
+            } catch (err) {
+                alertEl.className = 'modal-alert error';
+                alertEl.textContent = err.message;
+                alertEl.style.display = 'block';
+            } finally { saveBtn.disabled = false; }
         }
 
         async function loadUserDonations() {
@@ -451,31 +602,79 @@
 
                 const donations = await res.json();
 
+                let total = 0;
+                let causes = new Set();
+
+                (donations || []).forEach(d => {
+                    if (d.paymentStatus === 'SUCCESS') {
+                        total += parseFloat(d.amount || 0);
+                        if (d.campaignId) causes.add(d.campaignId);
+                    }
+                });
+
+                const formattedTotal = formatINR(total);
+                if (document.getElementById('display-total-donated')) {
+                    document.getElementById('display-total-donated').textContent = formattedTotal;
+                }
+                if (document.getElementById('profileTotalDonatedVal')) {
+                    document.getElementById('profileTotalDonatedVal').textContent = formattedTotal;
+                }
+                if (document.getElementById('profileCausesCountVal')) {
+                    document.getElementById('profileCausesCountVal').textContent = causes.size;
+                }
+
                 if (!donations || donations.length === 0) {
                     listEl.innerHTML = `
                         <div class="empty-placeholder">
-                            <p style="margin-bottom:1rem;">No donations recorded yet.</p>
-                            <a href="campaigns.html" class="btn-create">Explore Causes</a>
+                            <p style="margin-bottom:1rem;">You have not made any contributions yet.</p>
+                            <a href="campaigns.html" class="btn-create">Explore Causes &amp; Donate</a>
                         </div>
                     `;
                     return;
                 }
 
-                listEl.innerHTML = donations.slice(0, 5).map(d => {
+                listEl.innerHTML = donations.map(d => {
                     const dateFormatted = d.donatedAt ? new Date(d.donatedAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Recent';
+                    const isSuccess = d.paymentStatus === 'SUCCESS';
                     return `
-                        <div class="campaign-item">
-                            <div>
+                        <div class="campaign-item" style="padding: 1rem 1.25rem;">
+                            <div style="flex: 1;">
                                 <div style="font-weight:700; color:white; font-size:1.05rem; margin-bottom:0.25rem;">${escapeHtml(d.campaignTitle || 'Campaign #' + d.campaignId)}</div>
-                                <div class="campaign-meta">Date: ${dateFormatted} &bull; Txn: ${escapeHtml(d.transactionId || '')}</div>
+                                <div class="campaign-meta">Date: ${dateFormatted} &bull; Txn: ${escapeHtml(d.transactionId || 'N/A')} &bull; Status: <span style="color: ${isSuccess ? '#34d399' : '#fca5a5'}; font-weight:600;">${d.paymentStatus || 'SUCCESS'}</span></div>
                             </div>
-                            <div style="font-size:1.15rem; font-weight:800; color:var(--accent);">${formatINR(d.amount)}</div>
+                            <div style="display:flex; align-items:center; gap:1rem;">
+                                <div style="font-size:1.25rem; font-weight:800; color:var(--accent); text-align:right;">${formatINR(d.amount)}</div>
+                                ${isSuccess ? `<button onclick="downloadReceipt(${d.id})" class="btn-action-view" style="cursor:pointer; background:rgba(59,130,246,0.15);" title="Download 80G Tax Receipt">📄 Receipt</button>` : ''}
+                                ${d.campaignId ? `<a href="campaign-detail.html?id=${d.campaignId}" class="btn-action-view">View</a>` : ''}
+                            </div>
                         </div>
                     `;
                 }).join('');
 
             } catch (err) {
-                listEl.innerHTML = '<div class="empty-placeholder" style="color:#f87171;">Unable to load donations.</div>';
+                listEl.innerHTML = '<div class="empty-placeholder" style="color:#f87171;">Unable to load contributions.</div>';
+            }
+        }
+
+        async function downloadReceipt(id) {
+            try {
+                const res = await fetch('/api/donations/' + id + '/receipt', {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+
+                if (!res.ok) throw new Error('Receipt generation failed');
+
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'receipt_' + id + '.pdf';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                alert('Failed to download receipt: ' + err.message);
             }
         }
 
@@ -521,6 +720,39 @@
                 }
             } catch (err) {
                 alert('Error updating profile: ' + err.message);
+            }
+        }
+
+        async function deleteMyAccount() {
+            if (!confirm('⚠️ Are you sure you want to permanently delete your account?\n\nThis will remove your profile and revoke access to your account. This action cannot be undone.')) {
+                return;
+            }
+
+            const secondConfirm = prompt('To confirm permanent deletion, please type "DELETE":');
+            if (secondConfirm !== 'DELETE') {
+                alert('Account deletion cancelled.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/profile', {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                if (res.ok || res.status === 204) {
+                    alert('Your account has been deleted successfully.');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'index.html';
+                } else {
+                    const err = await res.json().catch(() => ({}));
+                    alert('Failed to delete account: ' + (err.message || 'Server error'));
+                }
+            } catch (err) {
+                alert('Connection error while deleting account: ' + err.message);
             }
         }
 

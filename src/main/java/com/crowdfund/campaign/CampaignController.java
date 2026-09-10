@@ -74,7 +74,8 @@ public class CampaignController {
 
     @PutMapping("/{id}")
     public ResponseEntity<CampaignResponse> updateCampaign(@PathVariable Long id, @RequestBody CampaignRequest req) {
-        Long ownerId = getAuthenticatedUser().getId();
+        User user = getAuthenticatedUser();
+        Long ownerId = (user.getRole() == com.crowdfund.auth.Role.ADMIN) ? -1L : user.getId();
         return ResponseEntity.ok(campaignService.updateCampaign(id, req, ownerId));
     }
 

@@ -54,4 +54,11 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.ok(authService.updateProfile(userDetails.getUsername(), request));
     }
+
+    @DeleteMapping("/profile")
+    public ResponseEntity<Void> deleteAccount() {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        authService.deleteAccount(userDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
 }

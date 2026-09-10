@@ -103,6 +103,20 @@
         .btn-donate:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(59,130,246,0.4); }
         .btn-donate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
+        .btn-edit-action {
+            width: 100%; padding: 0.9rem; border-radius: 0.75rem;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            background: rgba(59, 130, 246, 0.15); color: #60a5fa;
+            font-size: 0.95rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; margin-bottom: 0.75rem;
+        }
+        .btn-edit-action:hover {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.8);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
+        }
+
         .btn-danger-action {
             width: 100%; padding: 0.9rem; border-radius: 0.75rem;
             border: 1px solid rgba(239, 68, 68, 0.4);
@@ -136,6 +150,42 @@
         .sk-title { height: 2.2rem; width: 80%; margin-bottom: 1rem; }
         .sk-line { height: 1rem; margin-bottom: 0.6rem; }
         .sk-desc { height: 0.9rem; margin-bottom: 0.5rem; }
+
+        /* Edit Modal Styles */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center;
+            z-index: 1000; padding: 1.5rem;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: #1e293b; border: 1px solid var(--border); border-radius: 1.25rem;
+            max-width: 650px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7); position: relative;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .modal-title { font-size: 1.4rem; font-weight: 700; color: white; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; color: var(--muted); cursor: pointer; padding: 0.25rem; line-height: 1; }
+        .modal-close:hover { color: white; }
+        .modal-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group.full { grid-column: 1 / -1; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.4rem; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 0.75rem 1rem; background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border); border-radius: 0.6rem; color: white; font-size: 0.95rem;
+            font-family: inherit; outline: none; transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
+        .btn-save-modal {
+            width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white; border: none; border-radius: 0.6rem; font-size: 1rem; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; margin-top: 0.5rem;
+        }
+        .btn-save-modal:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35); }
+        .modal-alert { padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 1rem; font-size: 0.88rem; display: none; }
+        .modal-alert.error { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+        .modal-alert.success { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #86efac; }
     </style>
 </head>
 <body>
@@ -220,12 +270,15 @@
                 <button class="btn-donate" onclick="donate()" id="donateBtn">Donate Now</button>
             </div>
 
-            <!-- Manage / Delete Widget (Active for logged-in users / owner / admin) -->
-            <div class="widget" id="deleteWidget" style="border-color: rgba(239, 68, 68, 0.3);">
-                <div class="section-title" style="color: #f87171;">Manage Campaign</div>
-                <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem;">Delete this campaign from the platform.</p>
+            <!-- Manage Widget (Active for owner / admin) -->
+            <div class="widget" id="deleteWidget" style="border-color: rgba(59, 130, 246, 0.3); display: none;">
+                <div class="section-title" style="color: #60a5fa;">Campaign Management</div>
+                <p style="font-size:0.85rem; color:var(--muted); margin-bottom:1rem;">You can update the campaign date, funding goal, details, or remove it.</p>
+                <button class="btn-edit-action" onclick="openEditModal()" id="editBtn">
+                    ✏️ Edit Details &amp; Change Date
+                </button>
                 <button class="btn-danger-action" onclick="deleteCurrentCampaign()" id="deleteBtn">
-                    Delete Campaign
+                    🗑️ Delete Campaign
                 </button>
             </div>
 
@@ -241,11 +294,76 @@
         </div>
     </div>
 
+    <!-- Edit Campaign Modal -->
+    <div class="modal-overlay" id="editModalOverlay" onclick="if(event.target===this) closeEditModal()">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">✏️ Update Campaign &amp; Date</div>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            
+            <div class="modal-alert" id="modalAlert"></div>
+
+            <form id="editCampaignForm" onsubmit="handleEditFormSubmit(event)">
+                <div class="modal-form-grid">
+                    <div class="form-group full">
+                        <label for="editTitle">Campaign Title *</label>
+                        <input type="text" id="editTitle" required maxlength="150">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editCategory">Category *</label>
+                        <select id="editCategory" required>
+                            <option value="Education">Education</option>
+                            <option value="Health">Health &amp; Medical</option>
+                            <option value="Environment">Environment &amp; Nature</option>
+                            <option value="Disaster Relief">Disaster Relief</option>
+                            <option value="Community">Community Development</option>
+                            <option value="Animals">Animal Welfare</option>
+                            <option value="Technology">Technology &amp; Innovation</option>
+                            <option value="Other">Other Causes</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editGoalAmount">Target Goal Amount (INR) *</label>
+                        <input type="number" id="editGoalAmount" min="100" step="10" required>
+                    </div>
+
+                    <div class="form-group full" style="background: rgba(59, 130, 246, 0.08); padding: 0.75rem; border-radius: 0.6rem; border: 1px solid rgba(59, 130, 246, 0.25);">
+                        <label for="editDeadline" style="color: #60a5fa; font-weight: 700;">📅 Campaign End Date / Deadline *</label>
+                        <input type="date" id="editDeadline" required style="border-color: rgba(59, 130, 246, 0.4);">
+                        <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.25rem;">Change or extend the deadline for this fundraising campaign.</div>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="editShortDescription">Short Summary *</label>
+                        <input type="text" id="editShortDescription" required maxlength="250">
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="editDescription">Full Story &amp; Details *</label>
+                        <textarea id="editDescription" rows="5" required></textarea>
+                    </div>
+
+                    <div class="form-group full">
+                        <label for="editImageFile">Update Cover Photo (Optional)</label>
+                        <input type="file" id="editImageFile" accept="image/*">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-save-modal" id="modalSaveBtn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         const params = new URLSearchParams(window.location.search);
         const campaignId = params.get('id');
         let campaignData = null;
         let selectedAmt = 0;
+        const currentUser = JSON.parse(localStorage.getItem('user') || 'null');
+        const token = localStorage.getItem('token');
 
         function formatINR(amount) {
             if (!amount && amount !== 0) return 'INR 0';
@@ -268,7 +386,6 @@
             }
 
             try {
-                const token = localStorage.getItem('token');
                 const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
                 const res = await fetch('/api/campaigns/' + campaignId, { headers });
 
@@ -323,6 +440,8 @@
                     const chip = document.getElementById('deadlineChip');
                     chip.style.display = 'block';
                     document.getElementById('deadlineText').textContent = 'Deadline: ' + formatDate(c.deadline) + ' (' + daysLeft + ' days left)';
+                    document.getElementById('donateBtn').disabled = false;
+                    document.getElementById('donateBtn').textContent = 'Donate Now';
                 } else {
                     document.getElementById('cDays').textContent = '0';
                     const chip = document.getElementById('deadlineChip');
@@ -333,8 +452,110 @@
                 }
             }
 
+            // Show Manage widget if owner or admin
+            const isOwnerOrAdmin = currentUser && (currentUser.userId == c.ownerId || currentUser.role === 'ADMIN');
+            const manageWidget = document.getElementById('deleteWidget');
+            if (manageWidget) {
+                manageWidget.style.display = isOwnerOrAdmin ? 'block' : 'none';
+            }
+
             document.getElementById('skeleton').style.display = 'none';
             document.getElementById('realContent').style.display = 'block';
+        }
+
+        function openEditModal() {
+            if (!campaignData) return;
+
+            document.getElementById('editTitle').value = campaignData.title || '';
+            document.getElementById('editCategory').value = campaignData.category || 'Education';
+            document.getElementById('editGoalAmount').value = campaignData.goalAmount || 1000;
+            document.getElementById('editDeadline').value = campaignData.deadline ? campaignData.deadline.split('T')[0] : '';
+            document.getElementById('editShortDescription').value = campaignData.shortDescription || '';
+            document.getElementById('editDescription').value = campaignData.description || '';
+            document.getElementById('editImageFile').value = '';
+
+            const alertEl = document.getElementById('modalAlert');
+            alertEl.style.display = 'none';
+
+            document.getElementById('editModalOverlay').classList.add('active');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModalOverlay').classList.remove('active');
+        }
+
+        async function handleEditFormSubmit(e) {
+            e.preventDefault();
+            if (!token) {
+                alert('Please log in.');
+                return;
+            }
+
+            const title = document.getElementById('editTitle').value.trim();
+            const category = document.getElementById('editCategory').value;
+            const goalAmount = parseFloat(document.getElementById('editGoalAmount').value);
+            const deadline = document.getElementById('editDeadline').value;
+            const shortDescription = document.getElementById('editShortDescription').value.trim();
+            const description = document.getElementById('editDescription').value.trim();
+            const fileInput = document.getElementById('editImageFile');
+
+            const alertEl = document.getElementById('modalAlert');
+            const saveBtn = document.getElementById('modalSaveBtn');
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving Changes...';
+
+            try {
+                const res = await fetch('/api/campaigns/' + campaignId, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({
+                        title,
+                        category,
+                        goalAmount,
+                        deadline,
+                        shortDescription,
+                        description
+                    })
+                });
+
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({}));
+                    throw new Error(err.message || 'Failed to update campaign');
+                }
+
+                // If image selected, upload it
+                if (fileInput.files && fileInput.files[0]) {
+                    saveBtn.textContent = 'Uploading new image...';
+                    const formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+                    await fetch('/api/campaigns/' + campaignId + '/upload-image', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + token },
+                        body: formData
+                    });
+                }
+
+                alertEl.className = 'modal-alert success';
+                alertEl.textContent = 'Campaign updated successfully!';
+                alertEl.style.display = 'block';
+
+                setTimeout(() => {
+                    closeEditModal();
+                    loadCampaign();
+                }, 800);
+
+            } catch (err) {
+                alertEl.className = 'modal-alert error';
+                alertEl.textContent = err.message || 'Error updating campaign.';
+                alertEl.style.display = 'block';
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Changes';
+            }
         }
 
         function showError(msg) {
@@ -365,7 +586,6 @@
         }
 
         function donate() {
-            const token = localStorage.getItem('token');
             if (!token) {
                 if (confirm('Please sign in to donate. Go to login page?')) {
                     window.location.href = 'login.html';
@@ -385,7 +605,6 @@
         }
 
         async function deleteCurrentCampaign() {
-            const token = localStorage.getItem('token');
             if (!token) {
                 alert('Please sign in to delete this campaign.');
                 window.location.href = 'login.html';
