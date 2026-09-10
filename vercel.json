@@ -1,12 +1,13 @@
 {
-  "version": 2,
-  "public": true,
   "cleanUrls": true,
-  "directory": "src/main/resources/static",
-  "routes": [
+  "rewrites": [
     {
-      "src": "/(.*)",
-      "dest": "/src/main/resources/static/$1"
+      "source": "/",
+      "destination": "/src/main/resources/static/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/src/main/resources/static/$1"
     }
   ]
 }
