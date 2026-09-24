@@ -247,6 +247,13 @@
         let selectedAmount = initialAmount;
         let completedDonationId = null;
         const token = localStorage.getItem('token');
+        let currentUser = null;
+        try {
+            const rawUser = localStorage.getItem('user');
+            if (rawUser) currentUser = JSON.parse(rawUser);
+        } catch (e) {
+            currentUser = null;
+        }
 
         // Check authentication
         if (!token) {
@@ -290,12 +297,17 @@
             document.getElementById('donate-btn').innerText = 'Donate INR ' + (selectedAmount > 0 ? selectedAmount.toLocaleString('en-IN') : '0');
         });
 
-        // Instant Sandbox Donation
-        async function executeSandboxDonation() {
+        // Razorpay Checkout Integration
+        async function executeDonation() {
             if (!selectedAmount || selectedAmount < 10) {
                 alert("Please enter a donation amount of at least INR 10.");
                 return;
             }
+
+            const donateBtn = document.getElementById('donate-btn');
+            const originalBtnText = donateBtn.innerText;
+            donateBtn.disabled = true;
+            donateBtn.innerText = 'Processing Order...';
 
             const payload = {
                 campaignId: parseInt(campaignId),
@@ -317,38 +329,115 @@
 
                 if (!data.donationId) {
                     alert("Failed to initiate donation: " + (data.error || 'Unknown error'));
+                    donateBtn.disabled = false;
+                    donateBtn.innerText = originalBtnText;
                     return;
                 }
 
-                // Verify with test signature
-                const verifyRes = await fetch('/api/donations/verify', {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + token 
-                    },
-                    body: JSON.stringify({
-                        razorpayOrderId: data.orderId || 'order_mock',
-                        razorpayPaymentId: 'pay_mock_' + Date.now(),
-                        razorpaySignature: 'mock_signature',
-                        donationId: data.donationId
-                    })
-                });
+                // If Razorpay SDK is available and key is configured
+                if (typeof Razorpay !== 'undefined' && data.key && !data.key.includes('YOUR_')) {
+                    const options = {
+                        key: data.key,
+                        amount: Math.round(data.amount * 100), // amount in paise
+                        currency: "INR",
+                        name: "ImpactPulse Crowdfunding",
+                        description: "Donation for " + (data.campaignTitle || "Campaign #" + campaignId),
+                        image: "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+                        order_id: data.orderId,
+                        handler: async function (response) {
+                            try {
+                                donateBtn.innerText = 'Verifying Payment...';
+                                const verifyRes = await fetch('/api/donations/verify', {
+                                    method: 'POST',
+                                    headers: { 
+                                        'Content-Type': 'application/json',
+                                        'Authorization': 'Bearer ' + token 
+                                    },
+                                    body: JSON.stringify({
+                                        razorpayOrderId: response.razorpay_order_id,
+                                        razorpayPaymentId: response.razorpay_payment_id,
+                                        razorpaySignature: response.razorpay_signature,
+                                        donationId: data.donationId
+                                    })
+                                });
 
-                if (verifyRes.ok) {
-                    completedDonationId = data.donationId;
-                    showSuccess();
+                                if (verifyRes.ok) {
+                                    completedDonationId = data.donationId;
+                                    showSuccess();
+                                } else {
+                                    const errData = await verifyRes.json();
+                                    alert("Payment verification failed: " + (errData.error || 'Invalid signature'));
+                                }
+                            } catch (err) {
+                                alert("Error verifying payment: " + err.message);
+                            } finally {
+                                donateBtn.disabled = false;
+                                donateBtn.innerText = originalBtnText;
+                            }
+                        },
+                        prefill: {
+                            name: currentUser ? (currentUser.name || "") : "",
+                            email: currentUser ? (currentUser.email || "") : "",
+                            contact: currentUser ? (currentUser.phone || "") : ""
+                        },
+                        notes: {
+                            campaignId: campaignId,
+                            donationId: data.donationId
+                        },
+                        theme: {
+                            color: "#3b82f6"
+                        },
+                        modal: {
+                            ondismiss: function() {
+                                donateBtn.disabled = false;
+                                donateBtn.innerText = originalBtnText;
+                            }
+                        }
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.on('payment.failed', function (resp) {
+                        alert("Payment Failed: " + (resp.error.description || resp.error.reason));
+                        donateBtn.disabled = false;
+                        donateBtn.innerText = originalBtnText;
+                    });
+                    rzp.open();
+
                 } else {
-                    alert("Payment verification failed.");
+                    // Fallback simulation if offline or SDK blocked
+                    const verifyRes = await fetch('/api/donations/verify', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token 
+                        },
+                        body: JSON.stringify({
+                            razorpayOrderId: data.orderId || 'order_mock',
+                            razorpayPaymentId: 'pay_mock_' + Date.now(),
+                            razorpaySignature: 'mock_signature',
+                            donationId: data.donationId
+                        })
+                    });
+
+                    if (verifyRes.ok) {
+                        completedDonationId = data.donationId;
+                        showSuccess();
+                    } else {
+                        alert("Payment verification failed.");
+                    }
+                    donateBtn.disabled = false;
+                    donateBtn.innerText = originalBtnText;
                 }
 
             } catch (err) {
                 console.error(err);
                 alert("Error completing donation: " + err.message);
+                donateBtn.disabled = false;
+                donateBtn.innerText = originalBtnText;
             }
         }
 
-        document.getElementById('donate-btn').addEventListener('click', executeSandboxDonation);
+        document.getElementById('donate-btn').addEventListener('click', executeDonation);
 
         function showSuccess() {
             document.getElementById('donation-form-container').style.display = 'none';

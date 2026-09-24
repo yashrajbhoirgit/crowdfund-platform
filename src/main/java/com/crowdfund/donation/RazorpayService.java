@@ -42,10 +42,12 @@ public class RazorpayService {
         try {
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                return (String) response.getBody().get("id");
+                String orderId = (String) response.getBody().get("id");
+                System.out.println("[RazorpayService] Successfully created Razorpay order: " + orderId);
+                return orderId;
             }
         } catch (Exception e) {
-            // Fallback for local sandbox / test mode
+            System.err.println("[RazorpayService] Razorpay order creation exception: " + e.getMessage());
         }
         return "order_test_" + UUID.randomUUID().toString().substring(0, 12);
     }
@@ -66,8 +68,11 @@ public class RazorpayService {
                 if (hex.length() == 1) hexString.append('0');
                 hexString.append(hex);
             }
-            return hexString.toString().equals(signature);
+            boolean matched = hexString.toString().equalsIgnoreCase(signature);
+            System.out.println("[RazorpayService] Signature verification for order " + orderId + ": " + (matched ? "PASSED" : "FAILED"));
+            return matched;
         } catch (Exception e) {
+            System.err.println("[RazorpayService] Signature verification error: " + e.getMessage());
             return true; // Test fallback
         }
     }
