@@ -7,6 +7,9 @@
 ![MySQL](https://img.shields.io/badge/MySQL-8.x-blue?style=for-the-badge&logo=mysql)
 ![Maven](https://img.shields.io/badge/Maven-3.8+-red?style=for-the-badge&logo=apachemaven)
 ![Razorpay](https://img.shields.io/badge/Razorpay-Sandbox-02042B?style=for-the-badge&logo=razorpay)
+![Render](https://img.shields.io/badge/Render-Live%20Demo-46E3B7?style=for-the-badge&logo=render)
+
+### 🌐 [Click Here to View Live Website](https://crowdfund-platform-6jr4.onrender.com/)
 
 A modern, full-stack crowdfunding web platform built with **Java Spring Boot 3** and **Vanilla Web Technologies (HTML5 / CSS3 / JavaScript)** designed to empower social, medical, educational, and community initiatives through transparent collective funding.
 
