@@ -46,3 +46,21 @@ src/main/resources/static/uploads/
 # Application properties with secrets (keep application.properties in repo but sanitized)
 # application-prod.properties
 # application-secret.properties
+
+# Local DB & Data
+data/
+uploads/
+
+# Python caches and documentation scratch assets
+__pycache__/
+*.py
+*.pyc
+report_assets/
+extracted_*
+format_media/
+reference_media/
+refernce mini poject/
+*.png
+*.docx
+
+

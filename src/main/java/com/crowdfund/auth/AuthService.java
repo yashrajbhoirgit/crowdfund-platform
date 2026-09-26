@@ -32,13 +32,19 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
+        if (request.getName() == null || request.getName().trim().isEmpty()) {
+            throw new RuntimeException("Name is required");
+        }
+        if (request.getName().matches(".*\\d.*")) {
+            throw new RuntimeException("Name cannot contain numbers");
+        }
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email is already taken");
         }
 
         User user = User.builder()
-                .name(request.getName())
-                .email(request.getEmail())
+                .name(request.getName().trim())
+                .email(request.getEmail().trim())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole() != null ? request.getRole() : Role.USER)
                 .build();
@@ -101,7 +107,12 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (request.getName() != null) user.setName(request.getName());
+        if (request.getName() != null) {
+            if (request.getName().matches(".*\\d.*")) {
+                throw new RuntimeException("Name cannot contain numbers");
+            }
+            user.setName(request.getName().trim());
+        }
         if (request.getBio() != null) user.setBio(request.getBio());
         if (request.getLocation() != null) user.setLocation(request.getLocation());
         if (request.getPhone() != null) user.setPhone(request.getPhone());

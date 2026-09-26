@@ -181,7 +181,7 @@
             <div id="error-msg"></div>
             <form id="registerForm">
                 <div class="input-group">
-                    <input type="text" id="name" placeholder=" " required>
+                    <input type="text" id="name" placeholder=" " pattern="^[^0-9]+$" title="Name should not contain numbers" required>
                     <label for="name">Full Name</label>
                 </div>
                 <div class="input-group">
@@ -235,12 +235,18 @@
 
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const name = document.getElementById('name').value;
-            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const confirmPass = document.getElementById('confirmPassword').value;
             const errorMsg = document.getElementById('error-msg');
             
+            if (/\d/.test(name)) {
+                errorMsg.style.display = 'block';
+                errorMsg.textContent = 'Name should not contain numbers';
+                return;
+            }
+
             if (password !== confirmPass) {
                 errorMsg.style.display = 'block';
                 errorMsg.textContent = 'Passwords do not match';
